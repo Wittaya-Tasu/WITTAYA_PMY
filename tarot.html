@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หมอวิทยา ธรรมนาย - ระบบเลือกไพ่พรหมญาณ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@600&display=swap');
+
+        body { font-family: 'Sarabun', sans-serif; background: #f4f7f6; text-align: center; padding: 20px; color: #333; }
+        .container { max-width: 950px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        h2 { color: #2c3e50; font-family: 'Kanit', sans-serif; font-size: 2em; margin-bottom: 5px; }
+        .sub-title { color: #7f8c8d; margin-bottom: 25px; font-size: 1.1em; }
+
+        /* Grid Layout */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(10, 1fr); 
+            gap: 10px; 
+            margin: 20px auto; 
+            padding: 15px;
+            background: #2c3e50;
+            border-radius: 12px;
+        }
+        
+        .card { 
+            aspect-ratio: 2/3; 
+            background: linear-gradient(145deg, #34495e, #1a252f);
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            border: 1px solid #000;
+            transition: all 0.2s;
+            user-select: none;
+            position: relative;
+        }
+
+        .card-index {
+            position: absolute;
+            top: 4px;
+            left: 5px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .card:hover { transform: translateY(-5px); border-color: #3498db; }
+
+        .card.selected { 
+            background: linear-gradient(145deg, #e67e22, #d35400); 
+            font-size: 32px; 
+            font-family: 'Kanit', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.6);
+            border: 2px solid #fff;
+            z-index: 5;
+        }
+        
+        /* UI Components */
+        .controls { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #eee; }
+        button { padding: 12px 25px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 10px; margin: 8px; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #219150; }
+        
+        input[type="text"] { padding: 15px; width: 85%; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; }
+        input[type="text"].error { border-color: #e74c3c; background: #fdf2f2; animation: shake 0.3s; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .btn-copy { background: #2980b9; margin-top: 15px; width: 100%; font-size: 18px; padding: 15px; }
+        .result-section { margin-top: 30px; text-align: left; padding: 25px; border: 3px solid #27ae60; border-radius: 15px; display: none; background: #fff; }
+        .result-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 1.1em; }
+        .pos-title { font-weight: bold; color: #27ae60; display: inline-block; width: 220px; }
+        .card-name { color: #d35400; font-weight: bold; }
+        .alert-extra { background: #fff3cd; border-left: 8px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🔮 หมอวิทยา ธรรมนาย</h2>
+    <p class="sub-title">ระบบพยากรณ์ไพ่พรหมญาณออนไลน์</p>
+    
+    <div class="controls">
+        <p><b>ขั้นตอนที่ 1:</b> เลือกรูปแบบการจั่วไพ่</p>
+        <button onclick="setMode(3)">1. แบบ 3 ใบ (ถามตอบ)</button>
+        <button onclick="setMode(12)">2. แบบ 12 ใบ (พื้นดวง)</button>
+        
+        <div id="question-block" style="display:none; margin-top: 20px;">
+            <p style="color: #e74c3c;"><b>⚠️ ต้องพิมพ์คำถามก่อนจึงจะเลือกไพ่ได้:</b></p>
+            <input type="text" id="user-question" placeholder="พิมพ์คำถามที่ท่านต้องการทราบที่นี่..." oninput="this.classList.remove('error')">
+        </div>
+
+        <div id="status-msg" style="margin-top:15px; font-weight: bold; color: #2980b9; font-size: 1.1em;"></div>
+        <button onclick="shuffleAndReset()" id="btn-shuffle" style="background:#34495e; display:none; font-size: 14px; padding: 8px 15px;">🔄 สลับตำแหน่งไพ่ใหม่</button>
+    </div>
+
+    <div id="card-board" class="grid-container"></div>
+
+    <div id="extra-alert" class="alert-extra" style="display:none;">
+        ✨ ไพ่พิเศษปรากฏ! ท่านได้รับสิทธิ์เลือกไพ่ขยายความเพิ่ม (เลือกได้รวมสูงสุด 6 ใบ)
+    </div>
+
+    <div id="result-area" class="result-section">
+        <h3 style="color: #27ae60; margin-top: 0;">📋 สรุปรายการไพ่ที่เลือก</h3>
+        <div id="selected-list"></div>
+        <button class="btn-copy" onclick="copyResult()">📋 กดเพื่อคัดลอก และส่งให้ "หมอวิทยา"</button>
+        <p id="copy-status" style="color: #27ae60; font-weight: bold; margin-top: 10px; text-align: center;"></p>
+    </div>
+</div>
+
+<script>
+    const CARD_DATA = {
+        101:"เทพพระอาทิตย์", 102:"เทพพระจันทร์", 103:"เทพพระอังคาร", 104:"เทพพระพุธ", 105:"เทพพระพฤหัสบดี", 106:"เทพพระศุกร์", 107:"เทพพระเสาร์",
+        201:"พระรามแผลงศร", 202:"ขงเบ้ง", 203:"พระแม่คงคา", 204:"พระนางสุพรรณมัจจฉา", 205:"พระพาย", 206:"พระกฤษณะ", 207:"ขุนแผนกับนางพิมฯ", 208:"พญาพาลีจับปูทศกันฐ์", 209:"พญาราชสีห์", 210:"นางสีดา", 211:"เทพบุตรยุติธรรม", 212:"เทพธิดาแมงป่อง",
+        301:"พระพิฆเนศทรงหนู", 302:"พระโคนนทิ", 303:"พระแม่อุมา", 304:"เทพธิดาพระจันทร์", 305:"พระนารายณ์บรรทมสินธุ์", 306:"ท้าววิรูปักษ์", 307:"พระอรุณเทพบุตร", 308:"พระทักษะ", 309:"หนุมาน", 310:"พญาสุครีพ", 311:"กุมารทอง", 312:"พระนางเบญจกัลยาณี",
+        401:"พระเพลิง", 402:"พระแม่ปาราวตี", 403:"พระขันธกุมาร", 404:"พระพิรุณ", 405:"พระพรหมฤาษี", 406:"พระนางสุรัสวดี", 407:"ท้าววิรุฬหก", 408:"พระอสุรินทร์ราหู", 409:"พระเกตุมงคล", 410:"ท้าวเวสสุวรรณ", 411:"พระพิฆเนศ", 412:"พระราหู", 413:"พระศิวะ", 414:"พระอินทร์", 415:"พระลักษมี", 416:"ท้าวธตรฐ", 417:"พระวิษณุกรม", 418:"พระนารายณ์ทรงสุบรรณ", 419:"พระเทวฤาษี", 420:"รจนากับสังข์ทอง", 421:"พระแม่ธรณี", 422:"พระรามกับสีดา", 423:"พญาครุฑกับนางกากี", 424:"พระแม่โพสพ", 425:"หนุมานกับนางเบญจกาย", 426:"กามเทพ", 427:"เมขลากับรามสูร", 428:"พรานบุญจับนางโมราห์", 429:"พระแม่นางกวัก", 430:"ทศกัณฐ์ออกรบ", 431:"พระยายมราช", 432:"โมรา", 433:"ไกรทองปราบชาละวัน", 434:"พระอภัยมณีกับนางผีเสื้อสมุทร", 435:"ความไม่เที่ยง", 436:"สัจธรรม"
+    };
+
+    const EXTRA_CARD_IDS = [201, 208, 211];
+    const POS_3 = ["ไพ่สำคัญในการตอบคำถาม", "สถานการณ์/ความรู้สึกนึกคิด", "คำแนะนำ/สิ่งที่ควรทำ", "ขยายความตำแหน่งที่ 1", "ขยายความตำแหน่งที่ 2", "ขยายความตำแหน่งที่ 3"];
+    const POS_12 = ["พื้นดวงชะตา", "ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ญาติพี่น้อง", "ลูกน้อง/บริวาร", "ศัตรู/อุปสรรค", "คู่ครอง/คนรัก", "โรค/ภัยพิบัติ", "ความสุข/ความสมหวัง", "การงาน/อาชีพ", "โชคลาภ/ยศตำแหน่ง", "สรุปดวงชะตา"];
+
+    let currentMode = 0;
+    let selectedCards = []; 
+    let deck = Object.keys(CARD_DATA).map(Number);
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('question-block').style.display = (mode === 3) ? 'block' : 'none';
+        document.getElementById('btn-shuffle').style.display = 'inline-block';
+        document.getElementById('status-msg').innerText = (mode === 3) ? "✍️ กรุณาพิมพ์คำถามก่อนเลือกไพ่" : "👉 ตั้งจิตอธิษฐานแล้วเลือกไพ่ให้ครบ 12 ใบ";
+        shuffleAndReset();
+    }
+
+    function shuffleAndReset() {
+        selectedCards = [];
+        document.getElementById('result-area').style.display = 'none';
+        document.getElementById('extra-alert').style.display = 'none';
+        document.getElementById('copy-status').innerText = "";
+        deck.sort(() => Math.random() - 0.5);
+        renderBoard();
+    }
+
+    function renderBoard() {
+        const board = document.getElementById('card-board');
+        board.innerHTML = "";
+        deck.forEach((cardId, index) => {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card';
+            cardDiv.innerHTML = `<span class="card-index">${index + 1}</span>`;
+            cardDiv.onclick = () => selectCard(cardId, cardDiv);
+            board.appendChild(cardDiv);
+        });
+    }
+
+    function selectCard(cardId, element) {
+        if (currentMode === 0) return;
+
+        // บังคับพิมพ์คำถามสำหรับโหมด 3 ใบ
+        if (currentMode === 3) {
+            const qInput = document.getElementById('user-question');
+            if (qInput.value.trim() === "") {
+                qInput.classList.add('error');
+                qInput.focus();
+                alert("กรุณาพิมพ์คำถามที่ต้องการทราบก่อนเลือกไพ่ครับ");
+                return;
+            }
+        }
+
+        if (element.classList.contains('selected')) return;
+
+        let maxAllowed = currentMode;
+        if (currentMode === 3 && selectedCards.length >= 3 && EXTRA_CARD_IDS.includes(selectedCards[2])) {
+            maxAllowed = 6;
+        }
+
+        if (selectedCards.length < maxAllowed) {
+            selectedCards.push(cardId);
+            element.classList.add('selected');
+            element.innerHTML = `<span class="card-index">${selectedCards.length}</span>${selectedCards.length}`;
+
+            if (currentMode === 3 && selectedCards.length === 3 && EXTRA_CARD_IDS.includes(cardId)) {
+                document.getElementById('extra-alert').style.display = 'block';
+                document.getElementById('status-msg').innerText = "✨ เลือกไพ่เพิ่มได้อีกสูงสุด 3 ใบครับ";
+            }
+
+            if (selectedCards.length === maxAllowed) {
+                showResults();
+            }
+        }
+    }
+
+    function showResults() {
+        const resArea = document.getElementById('result-area');
+        const listDiv = document.getElementById('selected-list');
+        resArea.style.display = 'block';
+        listDiv.innerHTML = "";
+        
+        const posNames = (currentMode === 3) ? POS_3 : POS_12;
+        selectedCards.forEach((id, index) => {
+            listDiv.innerHTML += `<div class="result-item"><span class="pos-title">${posNames[index] || 'จั่วเพิ่ม'}:</span> <span class="card-name">${id} ${CARD_DATA[id]}</span></div>`;
+        });
+        resArea.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('status-msg').innerText = "✅ เลือกไพ่เสร็จสมบูรณ์";
+    }
+
+    function copyResult() {
+        const question = document.getElementById('user-question').value || "พื้นดวงชะตา (แบบ 12 ใบ)";
+        const posNames = (currentMode === 3) ? POS_3 : POS_12;
+        
+        let textToCopy = `🔮 ผลการเลือกไพ่จาก "หมอวิทยา ธรรมนาย"\n`;
+        textToCopy += `❓ คำถาม: ${question}\n`;
+        textToCopy += `--------------------------\n`;
+        
+        selectedCards.forEach((id, index) => {
+            textToCopy += `${index + 1}. ${posNames[index] || 'จั่วเพิ่ม'}: ${id} ${CARD_DATA[id]}\n`;
+        });
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            document.getElementById('copy-status').innerText = "✅ คัดลอกแล้ว! ส่งเข้า LINE ให้หมอวิทยาได้เลย";
+        });
+    }
+</script>
+</body>
+</html>

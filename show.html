@@ -25,9 +25,29 @@
         #result-display { margin-top: 20px; display: none; }
         .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
 
-        .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; }
+        .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; transition: 0.3s; }
         .card-item img { width: 100%; border-radius: 5px; display: block; }
-        .pos-label { display: block; font-weight: bold; color: #27ae60; font-size: 0.8em; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
+        
+        /* สไตล์พื้นฐานของชื่อตำแหน่ง (ตัวหนา สีเขียว) */
+        .pos-label { 
+            display: block; 
+            font-weight: bold; 
+            color: #27ae60; 
+            font-size: 0.85em; 
+            margin-bottom: 8px; 
+            border-bottom: 1px solid #f0f0f0; 
+            padding-bottom: 4px; 
+        }
+
+        /* 1. สไตล์สำหรับตำแหน่งเตือนภัย (สีดำ) */
+        .pos-black { color: #000000 !important; }
+
+        /* 2. สไตล์เมื่อเจอไพ่ร้าย (ชื่อตำแหน่งสีแดง) */
+        .pos-red { color: #ff0000 !important; }
+
+        /* 3. สไตล์เมื่อไพ่ร้าย ตรงกับ ตำแหน่งเตือนภัย (พื้นหลังแดง ตัวหนังสือขาว) */
+        .card-danger-zone { background-color: #ff0000 !important; border-color: #b30000 !important; }
+        .card-danger-zone .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
         /* Layout 3-6 ใบ */
         .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 25px; max-width: 850px; margin: 0 auto; }
@@ -35,7 +55,7 @@
         /* Layout 12 ใบ */
         .custom-layout-12 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0 25px; }
 
-        /* ตำแหน่ง Grid สำหรับ 12 ใบ */
+        /* ตำแหน่ง Grid */
         .pos-D1 { grid-area: 1 / 4; } .pos-C2 { grid-area: 2 / 3; } .pos-E2 { grid-area: 2 / 5; }
         .pos-B3 { grid-area: 3 / 2; } .pos-D3 { grid-area: 3 / 4; } .pos-F3 { grid-area: 3 / 6; }
         .pos-A4 { grid-area: 4 / 1; } .pos-B4 { grid-area: 4 / 2; } .pos-C4 { grid-area: 4 / 3; }
@@ -55,7 +75,7 @@
 <div class="container">
     <div class="no-print">
         <h2>🔮 ระบบแสดงผลรูปภาพ - หมอวิทยา ธรรมนาย</h2>
-        <textarea id="input-text" placeholder="วางผลลัพธ์ที่คัดลอกมาที่นี่..."></textarea>
+        <textarea id="input-text" placeholder="วางผลลัพธ์ที่คัดลอกมาจาก index.html ที่นี่..."></textarea>
     </div>
 
     <div class="btn-group no-print">
@@ -77,6 +97,11 @@
     const IMAGE_PATH = 'images/'; 
     const IMAGE_EXT = '.jpg'; 
     const gridLayoutMap12 = ["pos-D1", "pos-C2", "pos-E2", "pos-B3", "pos-F3", "pos-A4", "pos-G4", "pos-F4", "pos-E4", "pos-C4", "pos-B4", "pos-D3"];
+    
+    // รายชื่อไพ่ร้าย (Bad Cards)
+    const BAD_CARD_IDS = ["401", "412", "408", "430", "431", "433"];
+    // รายชื่อตำแหน่งที่ต้องระวัง (Alert Positions)
+    const ALERT_POSITIONS = ["ศัตรู/อุปสรรค", "โรค/ภัยพิบัติ"];
 
     function processCards() {
         const inputText = document.getElementById('input-text').value;
@@ -113,11 +138,29 @@
             const cardPart = parts[1].trim(); 
             const cardId = cardPart.substring(0, 3); 
 
+            // --- ตรรกะการตัดสินสีตามเงื่อนไข ---
+            let cardClass = "card-item";
+            let labelClass = "pos-label";
+
+            const isBadCard = BAD_CARD_IDS.includes(cardId);
+            const isAlertPos = ALERT_POSITIONS.includes(posPart);
+
+            if (isAlertPos && isBadCard) {
+                // กรณี: ไพ่ร้าย + ตำแหน่งเตือนภัย -> พื้นแดง ตัวขาว
+                cardClass += " card-danger-zone";
+            } else if (isBadCard) {
+                // กรณี: ไพ่ร้าย (ในตำแหน่งอื่น) -> ชื่อตำแหน่งสีแดง
+                labelClass += " pos-red";
+            } else if (isAlertPos) {
+                // กรณี: ตำแหน่งเตือนภัย (แต่ไพ่ปกติ) -> ชื่อตำแหน่งสีดำ
+                labelClass += " pos-black";
+            }
+
             const cardDiv = document.createElement('div');
-            cardDiv.className = 'card-item';
+            cardDiv.className = cardClass;
             if (totalCards === 12) cardDiv.classList.add(gridLayoutMap12[index]);
 
-            cardDiv.innerHTML = `<span class="pos-label">${posPart}</span><img src="${IMAGE_PATH}${cardId}${IMAGE_EXT}" crossorigin="anonymous">`;
+            cardDiv.innerHTML = `<span class="${labelClass}">${posPart}</span><img src="${IMAGE_PATH}${cardId}${IMAGE_EXT}" crossorigin="anonymous">`;
             cardArea.appendChild(cardDiv);
         });
         resultDisplay.scrollIntoView({ behavior: 'smooth' });
@@ -126,13 +169,4 @@
     function saveAsImage() {
         const captureArea = document.getElementById('capture-area');
         window.scrollTo(0,0);
-        html2canvas(captureArea, { useCORS: true, scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'ผลการทำนาย-หมอวิทยา.png';
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-        });
-    }
-</script>
-</body>
-</html>
+        html2canvas(captureArea, { useCORS: true, scale

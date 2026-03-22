@@ -28,34 +28,32 @@
         .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; transition: 0.3s; }
         .card-item img { width: 100%; border-radius: 5px; display: block; }
         
-        /* สไตล์พื้นฐานของชื่อตำแหน่ง (ตัวหนา สีเขียว) */
         .pos-label { 
-            display: block; 
-            font-weight: bold; 
-            color: #27ae60; 
-            font-size: 0.85em; 
-            margin-bottom: 8px; 
-            border-bottom: 1px solid #f0f0f0; 
-            padding-bottom: 4px; 
+            display: block; font-weight: bold; color: #27ae60; 
+            font-size: 0.85em; margin-bottom: 8px; 
+            border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; 
         }
 
-        /* 1. สไตล์สำหรับตำแหน่งเตือนภัย (สีดำ) */
+        /* 🟢 สไตล์เงื่อนไขต่างๆ */
         .pos-black { color: #000000 !important; }
-
-        /* 2. สไตล์เมื่อเจอไพ่ร้าย (ชื่อตำแหน่งสีแดง) */
         .pos-red { color: #ff0000 !important; }
 
-        /* 3. สไตล์เมื่อไพ่ร้าย ตรงกับ ตำแหน่งเตือนภัย (พื้นหลังแดง ตัวหนังสือขาว) */
+        /* 🔴 โซนอันตราย (Crisis Zone): พื้นหลังแดง ตัวหนังสือขาว */
         .card-danger-zone { background-color: #ff0000 !important; border-color: #b30000 !important; }
         .card-danger-zone .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* Layout 3-6 ใบ */
-        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 25px; max-width: 850px; margin: 0 auto; }
+        /* 🟡 โซนมั่งคั่ง (Golden Zone): พื้นหลังแดงเหลืองทอง ตัวหนังสือขาว */
+        .card-gold-zone { 
+            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; 
+            border-color: #aa771c !important; 
+            box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4);
+        }
+        .card-gold-zone .pos-label { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); border-bottom-color: rgba(255,255,255,0.4) !important; }
 
-        /* Layout 12 ใบ */
+        /* Layout */
+        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 25px; max-width: 850px; margin: 0 auto; }
         .custom-layout-12 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0 25px; }
 
-        /* ตำแหน่ง Grid */
         .pos-D1 { grid-area: 1 / 4; } .pos-C2 { grid-area: 2 / 3; } .pos-E2 { grid-area: 2 / 5; }
         .pos-B3 { grid-area: 3 / 2; } .pos-D3 { grid-area: 3 / 4; } .pos-F3 { grid-area: 3 / 6; }
         .pos-A4 { grid-area: 4 / 1; } .pos-B4 { grid-area: 4 / 2; } .pos-C4 { grid-area: 4 / 3; }
@@ -65,7 +63,6 @@
             body { background: white; padding: 0; }
             .no-print, .btn-group, textarea { display: none !important; }
             .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0; }
-            #capture-area { padding: 0; }
             .custom-layout-12, .custom-layout-3to6 { display: grid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
@@ -98,10 +95,15 @@
     const IMAGE_EXT = '.jpg'; 
     const gridLayoutMap12 = ["pos-D1", "pos-C2", "pos-E2", "pos-B3", "pos-F3", "pos-A4", "pos-G4", "pos-F4", "pos-E4", "pos-C4", "pos-B4", "pos-D3"];
     
-    // รายชื่อไพ่ร้าย (Bad Cards)
+    // 💀 รายชื่อไพ่ร้าย
     const BAD_CARD_IDS = ["401", "412", "408", "430", "431", "433"];
-    // รายชื่อตำแหน่งที่ต้องระวัง (Alert Positions)
+    // 💰 รายชื่อไพ่ดี (มั่งคั่ง)
+    const GOOD_CARD_IDS = ["410", "411", "415", "416", "424"];
+
+    // ⚠️ ตำแหน่งเตือนภัย
     const ALERT_POSITIONS = ["ศัตรู/อุปสรรค", "โรค/ภัยพิบัติ"];
+    // ✨ ตำแหน่งมั่งคั่ง
+    const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ความสุขสมหวัง", "โชค/ยศศักดิ์"];
 
     function processCards() {
         const inputText = document.getElementById('input-text').value;
@@ -138,22 +140,23 @@
             const cardPart = parts[1].trim(); 
             const cardId = cardPart.substring(0, 3); 
 
-            // --- ตรรกะการตัดสินสีตามเงื่อนไข ---
             let cardClass = "card-item";
             let labelClass = "pos-label";
 
             const isBadCard = BAD_CARD_IDS.includes(cardId);
+            const isGoodCard = GOOD_CARD_IDS.includes(cardId);
             const isAlertPos = ALERT_POSITIONS.includes(posPart);
+            const isWealthPos = WEALTH_POSITIONS.includes(posPart);
 
+            // --- ตรรกะตัดสินสี ---
             if (isAlertPos && isBadCard) {
-                // กรณี: ไพ่ร้าย + ตำแหน่งเตือนภัย -> พื้นแดง ตัวขาว
-                cardClass += " card-danger-zone";
+                cardClass += " card-danger-zone"; // วิกฤต: แดงขาว
+            } else if (isWealthPos && isGoodCard) {
+                cardClass += " card-gold-zone"; // มั่งคั่ง: ทองขาว
             } else if (isBadCard) {
-                // กรณี: ไพ่ร้าย (ในตำแหน่งอื่น) -> ชื่อตำแหน่งสีแดง
-                labelClass += " pos-red";
+                labelClass += " pos-red"; // ไพ่ร้ายที่อื่น: ชื่อแดง
             } else if (isAlertPos) {
-                // กรณี: ตำแหน่งเตือนภัย (แต่ไพ่ปกติ) -> ชื่อตำแหน่งสีดำ
-                labelClass += " pos-black";
+                labelClass += " pos-black"; // ตำแหน่งเตือนภัยทั่วไป: ชื่อดำ
             }
 
             const cardDiv = document.createElement('div');
@@ -169,4 +172,13 @@
     function saveAsImage() {
         const captureArea = document.getElementById('capture-area');
         window.scrollTo(0,0);
-        html2canvas(captureArea, { useCORS: true, scale
+        html2canvas(captureArea, { useCORS: true, scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'ผลการทำนาย-หมอวิทยา.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>

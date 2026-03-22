@@ -34,15 +34,15 @@
             border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; 
         }
 
-        /* 🟢 สไตล์เงื่อนไขต่างๆ */
+        /* 🟢 สไตล์เงื่อนไข */
         .pos-black { color: #000000 !important; }
         .pos-red { color: #ff0000 !important; }
 
-        /* 🔴 โซนอันตราย (Crisis Zone): พื้นหลังแดง ตัวหนังสือขาว */
+        /* 🔴 วิกฤต (Crisis Zone) */
         .card-danger-zone { background-color: #ff0000 !important; border-color: #b30000 !important; }
         .card-danger-zone .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* 🟡 โซนมั่งคั่ง (Golden Zone): พื้นหลังแดงเหลืองทอง ตัวหนังสือขาว */
+        /* 🟡 มั่งคั่ง (Golden Zone) */
         .card-gold-zone { 
             background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; 
             border-color: #aa771c !important; 
@@ -60,9 +60,8 @@
         .pos-E4 { grid-area: 4 / 5; } .pos-F4 { grid-area: 4 / 6; } .pos-G4 { grid-area: 4 / 7; }
 
         @media print {
-            body { background: white; padding: 0; }
             .no-print, .btn-group, textarea { display: none !important; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0; }
+            .container { box-shadow: none; border: none; width: 100%; margin: 0; padding: 0; }
             .custom-layout-12, .custom-layout-3to6 { display: grid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
@@ -72,7 +71,7 @@
 <div class="container">
     <div class="no-print">
         <h2>🔮 ระบบแสดงผลรูปภาพ - หมอวิทยา ธรรมนาย</h2>
-        <textarea id="input-text" placeholder="วางผลลัพธ์ที่คัดลอกมาจาก index.html ที่นี่..."></textarea>
+        <textarea id="input-text" placeholder="วางผลลัพธ์ที่คัดลอกมาที่นี่..."></textarea>
     </div>
 
     <div class="btn-group no-print">
@@ -95,14 +94,9 @@
     const IMAGE_EXT = '.jpg'; 
     const gridLayoutMap12 = ["pos-D1", "pos-C2", "pos-E2", "pos-B3", "pos-F3", "pos-A4", "pos-G4", "pos-F4", "pos-E4", "pos-C4", "pos-B4", "pos-D3"];
     
-    // 💀 รายชื่อไพ่ร้าย
     const BAD_CARD_IDS = ["401", "412", "408", "430", "431", "433"];
-    // 💰 รายชื่อไพ่ดี (มั่งคั่ง)
     const GOOD_CARD_IDS = ["410", "411", "415", "416", "424"];
-
-    // ⚠️ ตำแหน่งเตือนภัย
     const ALERT_POSITIONS = ["ศัตรู/อุปสรรค", "โรค/ภัยพิบัติ"];
-    // ✨ ตำแหน่งมั่งคั่ง
     const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ความสุขสมหวัง", "โชค/ยศศักดิ์"];
 
     function processCards() {
@@ -131,8 +125,7 @@
         const totalCards = cardLines.length;
 
         if (totalCards === 12) cardArea.className = 'custom-layout-12';
-        else if (totalCards >= 3 && totalCards <= 6) cardArea.className = 'custom-layout-3to6';
-        else { cardArea.className = ''; cardArea.style.display = 'flex'; cardArea.style.justifyContent = 'center'; cardArea.style.gap = '25px'; }
+        else if (totalCards >= 3) cardArea.className = 'custom-layout-3to6';
 
         cardLines.forEach((line, index) => {
             const parts = line.split(':');
@@ -148,16 +141,10 @@
             const isAlertPos = ALERT_POSITIONS.includes(posPart);
             const isWealthPos = WEALTH_POSITIONS.includes(posPart);
 
-            // --- ตรรกะตัดสินสี ---
-            if (isAlertPos && isBadCard) {
-                cardClass += " card-danger-zone"; // วิกฤต: แดงขาว
-            } else if (isWealthPos && isGoodCard) {
-                cardClass += " card-gold-zone"; // มั่งคั่ง: ทองขาว
-            } else if (isBadCard) {
-                labelClass += " pos-red"; // ไพ่ร้ายที่อื่น: ชื่อแดง
-            } else if (isAlertPos) {
-                labelClass += " pos-black"; // ตำแหน่งเตือนภัยทั่วไป: ชื่อดำ
-            }
+            if (isAlertPos && isBadCard) cardClass += " card-danger-zone";
+            else if (isWealthPos && isGoodCard) cardClass += " card-gold-zone";
+            else if (isBadCard) labelClass += " pos-red";
+            else if (isAlertPos) labelClass += " pos-black";
 
             const cardDiv = document.createElement('div');
             cardDiv.className = cardClass;

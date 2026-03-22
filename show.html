@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แสดงผลรูปภาพไพ่ - หมอวิทยา ธรรมนาย</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@600&display=swap');
+
+        body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; text-align: center; padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 1200px; margin: 20px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        h2 { color: #2c3e50; font-family: 'Kanit', sans-serif; font-size: 2.2em; margin-bottom: 5px; }
+        .description { color: #7f8c8d; margin-bottom: 25px; }
+
+        textarea { width: 95%; height: 120px; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; margin-bottom: 15px; resize: none; font-family: inherit; }
+        textarea:focus { border-color: #2980b9; outline: none; }
+        
+        button { padding: 15px 35px; cursor: pointer; background: #2980b9; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 0 #1c5a85; }
+        button:hover { background: #1f6391; transform: translateY(-2px); }
+        button:active { transform: translateY(2px); box-shadow: none; }
+
+        #result-display { margin-top: 40px; display: none; border-top: 2px solid #eee; padding-top: 30px; }
+        .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
+
+        /* ============================================================
+           CSS ทั่วไปสำหรับไอเทมไพ่ (ให้ดูโปร่งและสวยงาม)
+           ============================================================ */
+        .card-item { 
+            background: #fff; 
+            border-radius: 12px; 
+            padding: 12px; /* เพิ่ม Padding ในการ์ด */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            border: 1px solid #eee; 
+            transition: 0.3s; 
+            margin: 0; /* ลบ margin เดิมออกเพื่อให้ Grid gap จัดการระยะห่าง */
+        }
+        .card-item:hover { transform: translateY(-10px); box-shadow: 0 12px 20px rgba(0,0,0,0.15); }
+        .card-item img { width: 100%; border-radius: 8px; margin-bottom: 12px; background: #eee; min-height: 280px; }
+        .pos-label { display: block; font-weight: bold; color: #27ae60; font-size: 0.92em; margin-bottom: 6px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; }
+        .card-info { font-size: 0.88em; color: #555; font-weight: normal; line-height: 1.4; }
+
+        /* ============================================================
+           CSS ใหม่สำหรับผัง 3-6 ใบ (ถามตอบ) ตามผัง image_11.png
+           ============================================================ */
+        .custom-layout-3to6 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ (A, B, C) */
+            grid-template-rows: repeat(2, auto);    /* 2 แถว (1, 2) */
+            gap: 25px; /* เพิ่มช่องว่างที่เหมาะสมตามความต้องการ */
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            margin-top: 20px;
+            max-width: 900px; /* กำหนดความกว้างสูงสุดเพื่อให้ไพ่ไม่ออกข้างมากไป */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* บนมือถือสำหรับผัง 3-6 ใบ */
+        @media (max-width: 768px) {
+            .custom-layout-3to6 {
+                grid-template-columns: repeat(2, 1fr); /* บนมือถือลดเหลือ 2 คอลัมน์ */
+                gap: 15px;
+            }
+        }
+
+        /* ============================================================
+           CSS สำหรับการจัดวาง 12 ใบ ตามผังเดิมแบบ Grid 7x4
+           ============================================================ */
+        .custom-layout-12 {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(4, auto);
+            gap: 25px; /* เพิ่มช่องว่างที่เหมาะสมตามความต้องการ */
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        /* ปรับสไตล์ไอเทมไพ่ภายใน Grid 12 ใบ */
+        .custom-layout-12 .card-item, .custom-layout-3to6 .card-item {
+            width: auto; /* ให้ขยายเต็มตามขนาดเซลล์ Grid */
+            max-width: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        .custom-layout-12 .card-item img, .custom-layout-3to6 .card-item img {
+            min-height: auto;
+        }
+
+        /* กำหนดตำแหน่ง Grid สำหรับผัง 12 ใบ (อิงตาม image_10.png) */
+        .pos-D1 { grid-area: 1 / 4; }
+        .pos-C2 { grid-area: 2 / 3; }
+        .pos-E2 { grid-area: 2 / 5; }
+        .pos-B3 { grid-area: 3 / 2; }
+        .pos-D3 { grid-area: 3 / 4; }
+        .pos-F3 { grid-area: 3 / 6; }
+        .pos-A4 { grid-area: 4 / 1; }
+        .pos-B4 { grid-area: 4 / 2; }
+        .pos-C4 { grid-area: 4 / 3; }
+        .pos-E4 { grid-area: 4 / 5; }
+        .pos-F4 { grid-area: 4 / 6; }
+        .pos-G4 { grid-area: 4 / 7; }
+
+        @media (max-width: 1024px) {
+            /* บนแท็บเล็ตสำหรับผัง 12 ใบ */
+            .custom-layout-12 {
+                grid-template-columns: repeat(4, 1fr); /* บนมือถือลดเหลือ 4 คอลัมน์ */
+                gap: 15px;
+            }
+            /* ยกเลิกตำแหน่งเฉพาะจุดบนแท็บเล็ต */
+            .pos-D1, .pos-C2, .pos-E2, .pos-B3, .pos-D3, .pos-F3, .pos-A4, .pos-B4, .pos-C4, .pos-E4, .pos-F4, .pos-G4 {
+                grid-area: auto; 
+            }
+        }
+        
+        @media (max-width: 600px) {
+            /* บนมือถือเล็กสำหรับทุกผัง */
+            .custom-layout-12, .custom-layout-3to6 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🧩 ระบบแสดงผลรูปภาพ - หมอวิทยา ธรรมนาย</h2>
+    <p class="description">วางข้อความผลลัพธ์ที่เจ้าชะตาส่งกลับมา เพื่อดูภาพหน้าไพ่</p>
+    
+    <textarea id="input-text" placeholder="วางผลลัพธ์ที่นี่... (เช่น 🔮 ผลการเลือกไพ่จาก...)"></textarea><br>
+    <button onclick="processCards()">🖼️ แสดงรูปภาพไพ่</button>
+
+    <div id="result-display">
+        <div id="display-question" class="question-box"></div>
+        <div id="card-area"></div>
+    </div>
+</div>
+
+<script>
+    const IMAGE_PATH = 'images/'; 
+    const IMAGE_EXT = '.jpg'; 
+
+    // แผนผังตำแหน่งสำหรับผัง 12 ใบ (อิงตาม image_10.png และลำดับที่คุณกำหนด)
+    const gridLayoutMap12 = [
+        "pos-D1", // 1
+        "pos-C2", // 2
+        "pos-E2", // 3
+        "pos-B3", // 4
+        "pos-F3", // 5
+        "pos-A4", // 6
+        "pos-G4", // 7
+        "pos-F4", // 8
+        "pos-E4", // 9
+        "pos-C4", // 10
+        "pos-B4", // 11
+        "pos-D3"  // 12
+    ];
+
+    function processCards() {
+        const inputText = document.getElementById('input-text').value;
+        const resultDisplay = document.getElementById('result-display');
+        const displayQuestion = document.getElementById('display-question');
+        const cardArea = document.getElementById('card-area');
+
+        if (!inputText.trim()) {
+            alert("กรุณาวางข้อความก่อนครับ");
+            return;
+        }
+
+        cardArea.innerHTML = ""; 
+        resultDisplay.style.display = 'block';
+
+        const lines = inputText.split('\n');
+        let question = "ดูดวงภาพรวม";
+        const cardLines = [];
+
+        lines.forEach(line => {
+            if (line.includes('❓ คำถาม:')) {
+                question = line.replace('❓ คำถาม:', '').trim();
+            }
+            if (/^\d+\./.test(line) && line.includes(':')) {
+                cardLines.push(line);
+            }
+        });
+
+        displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
+
+        const totalCards = cardLines.length;
+
+        // กำหนด Layout ตามจำนวนไพ่
+        if (totalCards === 12) {
+            cardArea.className = 'custom-layout-12';
+        } else if (totalCards >= 3 && totalCards <= 6) {
+            cardArea.className = 'custom-layout-3to6';
+        } else {
+            // จำนวนไพ่แบบอื่นๆ (ไม่ค่อยเกิดขึ้นในระบบนี้) ให้แสดงเป็น Flex ปกติ
+            cardArea.className = '';
+            cardArea.style.display = 'flex';
+            cardArea.style.flexWrap = 'wrap';
+            cardArea.style.justifyContent = 'center';
+            cardArea.style.gap = '25px';
+            cardArea.style.padding = '20px';
+        }
+
+        cardLines.forEach((line, index) => {
+            const parts = line.split(':');
+            const posPart = parts[0].replace(/^\d+\.\s*/, '').trim(); 
+            const cardPart = parts[1].trim(); 
+            
+            const cardId = cardPart.substring(0, 3); 
+            const cardName = cardPart.substring(4).trim(); 
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card-item';
+            
+            // ถ้าเป็น 12 ใบ ให้เพิ่ม class ตำแหน่ง Grid เฉพาะเจาะจง
+            if (totalCards === 12) {
+                cardDiv.classList.add(gridLayoutMap12[index]);
+            }
+            // ถ้าเป็น 3-6 ใบ CSS Grid จะจัดวาง A1->B1->C1->A2->B2->C2 ให้อัตโนมัติ (ไม่ต้องเพิ่ม class พิเศษ)
+
+            cardDiv.innerHTML = `
+                <span class="pos-label">${posPart}</span>
+                <img src="${IMAGE_PATH}${cardId}${IMAGE_EXT}" alt="${cardName}">
+                <div class="card-info"><b>${cardId}</b> ${cardName}</div>
+            `;
+            cardArea.appendChild(cardDiv);
+        });
+
+        resultDisplay.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>

@@ -11,34 +11,29 @@
         body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; text-align: center; padding: 20px; color: #333; margin: 0; }
         .container { max-width: 1200px; margin: 20px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        .no-print { margin-bottom: 20px; } /* ส่วนที่ไม่ต้องการให้แสดงตอนพิมพ์/เซฟ */
-        
+        .no-print { margin-bottom: 20px; }
         h2 { color: #2c3e50; font-family: 'Kanit', sans-serif; font-size: 2.2em; margin-bottom: 5px; }
         textarea { width: 95%; height: 80px; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; margin-bottom: 15px; resize: none; }
         
-        /* ปุ่มต่างๆ */
         .btn-group { margin-bottom: 20px; }
         button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; transition: 0.3s; margin: 5px; }
         .btn-process { background: #2980b9; color: white; }
-        .btn-save-img { background: #27ae60; color: white; display: none; } /* ซ่อนไว้ก่อนจนกว่าจะประมวลผล */
+        .btn-save-img { background: #27ae60; color: white; display: none; }
         button:hover { opacity: 0.8; transform: translateY(-2px); }
 
-        /* พื้นที่แสดงผลที่จะถูกเซฟเป็นภาพ */
         #capture-area { padding: 30px; background: white; border-radius: 15px; }
-        
         #result-display { margin-top: 20px; display: none; }
         .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
 
-        /* การจัดวางไพ่ */
         .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; }
         .card-item img { width: 100%; border-radius: 5px; display: block; }
-        .pos-label { display: block; font-weight: bold; color: #27ae60; font-size: 0.8em; margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; padding-bottom: 3px; }
+        .pos-label { display: block; font-weight: bold; color: #27ae60; font-size: 0.8em; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
 
         /* Layout 3-6 ใบ */
-        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 20px; max-width: 800px; margin: 0 auto; }
+        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 25px; max-width: 850px; margin: 0 auto; }
 
         /* Layout 12 ใบ */
-        .custom-layout-12 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0 20px; }
+        .custom-layout-12 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0 25px; }
 
         /* ตำแหน่ง Grid สำหรับ 12 ใบ */
         .pos-D1 { grid-area: 1 / 4; } .pos-C2 { grid-area: 2 / 3; } .pos-E2 { grid-area: 2 / 5; }
@@ -46,20 +41,12 @@
         .pos-A4 { grid-area: 4 / 1; } .pos-B4 { grid-area: 4 / 2; } .pos-C4 { grid-area: 4 / 3; }
         .pos-E4 { grid-area: 4 / 5; } .pos-F4 { grid-area: 4 / 6; } .pos-G4 { grid-area: 4 / 7; }
 
-        /* ============================================================
-           ตั้งค่าสำหรับการ PRINT (Save as PDF)
-           ============================================================ */
         @media print {
             body { background: white; padding: 0; }
             .no-print, .btn-group, textarea { display: none !important; }
             .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0; }
             #capture-area { padding: 0; }
-            /* บังคับให้ CSS Grid ทำงานตอนพิมพ์ */
-            .custom-layout-12, .custom-layout-3to6 { 
-                display: grid !important; 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact;
-            }
+            .custom-layout-12, .custom-layout-3to6 { display: grid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -68,13 +55,12 @@
 <div class="container">
     <div class="no-print">
         <h2>🔮 ระบบแสดงผลรูปภาพ - หมอวิทยา ธรรมนาย</h2>
-        <p>วางข้อความผลลัพธ์เพื่อแสดงผังรูปภาพไพ่</p>
         <textarea id="input-text" placeholder="วางผลลัพธ์ที่คัดลอกมาที่นี่..."></textarea>
     </div>
 
     <div class="btn-group no-print">
         <button class="btn-process" onclick="processCards()">🖼️ แสดงรูปภาพไพ่</button>
-        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 บันทึกเป็นรูปภาพ (แนะนำ)</button>
+        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 บันทึกเป็นรูปภาพ</button>
         <button class="btn-save-img" style="background:#95a5a6; display:inline-block;" onclick="window.print()">📑 บันทึกเป็น PDF</button>
     </div>
 
@@ -119,7 +105,7 @@
 
         if (totalCards === 12) cardArea.className = 'custom-layout-12';
         else if (totalCards >= 3 && totalCards <= 6) cardArea.className = 'custom-layout-3to6';
-        else { cardArea.className = ''; cardArea.style.display = 'flex'; cardArea.style.justifyContent = 'center'; cardArea.style.gap = '20px'; }
+        else { cardArea.className = ''; cardArea.style.display = 'flex'; cardArea.style.justifyContent = 'center'; cardArea.style.gap = '25px'; }
 
         cardLines.forEach((line, index) => {
             const parts = line.split(':');
@@ -137,17 +123,10 @@
         resultDisplay.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // ฟังก์ชันสำหรับเซฟหน้าจอเป็นรูปภาพ
     function saveAsImage() {
         const captureArea = document.getElementById('capture-area');
-        // เลื่อนขึ้นไปบนสุดเพื่อให้เห็นภาพชัดๆ
         window.scrollTo(0,0);
-        
-        html2canvas(captureArea, {
-            useCORS: true, // อนุญาตให้ดึงรูปจาก GitHub
-            scale: 2, // เพิ่มความชัดเป็น 2 เท่า (คุณภาพสูง)
-            backgroundColor: "#ffffff"
-        }).then(canvas => {
+        html2canvas(captureArea, { useCORS: true, scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
             const link = document.createElement('a');
             link.download = 'ผลการทำนาย-หมอวิทยา.png';
             link.href = canvas.toDataURL("image/png");

@@ -50,7 +50,7 @@
         
         input[type="text"] { padding: 15px; width: 85%; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; }
 
-        /* ส่วนแสดงผลลัพธ์ที่ปรับปรุงใหม่ */
+        /* ส่วนแสดงผลลัพธ์ */
         .result-section { 
             margin-top: 30px; text-align: left; padding: 30px; 
             border: 2px solid #27ae60; border-radius: 20px; 
@@ -64,10 +64,9 @@
         
         .pos-title { font-weight: 500; color: #27ae60; width: 200px; flex-shrink: 0; }
         
-        /* สไตล์ชื่อไพ่ที่ต้องการปรับ */
         .card-highlight { 
-            color: #d35400; /* สีส้มอิฐเข้ม ขลังและสวยงาม */
-            font-weight: 700; /* ตัวหนา */
+            color: #d35400; 
+            font-weight: 700; 
             font-family: 'Kanit', sans-serif;
             margin-left: 10px;
             text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.05);
@@ -204,7 +203,7 @@
         selectedCards.forEach((id, index) => {
             listDiv.innerHTML += `
                 <div class="result-item">
-                    <span class="pos-title">${posNames[index] || 'จั่วเพิ่ม'}:</span>
+                    <span class="pos-title">${posNames[index] || 'ขยายความเพิ่มเติม'}:</span>
                     <span class="card-highlight">${id} ${CARD_DATA[id]}</span>
                 </div>`;
         });
@@ -213,11 +212,24 @@
     }
 
     function copyResult() {
-        const question = (currentMode === 3) ? document.getElementById('user-question').value : "พื้นดวงชะตา (แบบ 12 ใบ)";
+        const question = (currentMode === 3) ? document.getElementById('user-question').value : "วิเคราะห์พื้นดวงชะตา";
         const posNames = (currentMode === 3) ? POS_3 : POS_12;
-        let textToCopy = `🔮 ผลการเลือกไพ่จาก "หมอวิทยา ธรรมนาย"\n❓ คำถาม: ${question}\n--------------------------\n`;
-        selectedCards.forEach((id, index) => { textToCopy += `${index + 1}. ${posNames[index] || 'จั่วเพิ่ม'}: ${id} ${CARD_DATA[id]}\n`; });
-        navigator.clipboard.writeText(textToCopy).then(() => { document.getElementById('copy-status').innerText = "✅ คัดลอกแล้ว!"; });
+        
+        // รูปแบบข้อความใหม่ตามความต้องการของคุณหมอ
+        let textToCopy = `🔮 ผลการเลือกไพ่พรหมญาณ\n`;
+        textToCopy += `🔮 รูปแบบ : แบบ ${currentMode} ใบ\n`;
+        textToCopy += `--------------------------\n`;
+        textToCopy += `❓ คำถาม: ${question}\n`;
+        textToCopy += `--------------------------\n`;
+        
+        selectedCards.forEach((id, index) => { 
+            textToCopy += `${index + 1}. ${posNames[index] || 'ขยายความเพิ่มเติม'}: ${id} ${CARD_DATA[id]}\n`; 
+        });
+        
+        navigator.clipboard.writeText(textToCopy).then(() => { 
+            document.getElementById('copy-status').innerText = "✅ คัดลอกข้อความสำเร็จ!"; 
+            setTimeout(() => { document.getElementById('copy-status').innerText = ""; }, 3000);
+        });
     }
 </script>
 </body>

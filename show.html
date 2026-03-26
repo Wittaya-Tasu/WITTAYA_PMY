@@ -29,18 +29,30 @@
         .card-item img { width: 100%; border-radius: 5px; display: block; }
         
         .pos-label { 
-            display: block; font-weight: bold; color: #27ae60; 
+            display: block; font-weight: bold; 
             font-size: 0.85em; margin-bottom: 8px; 
             border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; 
         }
 
-        /* 🟢 สไตล์เงื่อนไข */
-        .pos-black { color: #000000 !important; }
-        .pos-red { color: #ff0000 !important; }
+        /* 🟢 สถานะ: ดีมาก (น้ำเงิน / ขาว) */
+        .card-very-good { background-color: #0047AB !important; border-color: #003380 !important; }
+        .card-very-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* 🔴 วิกฤต (Crisis Zone): พื้นหลังแดง ตัวหนังสือขาว */
-        .card-danger-zone { background-color: #ff0000 !important; border-color: #b30000 !important; }
-        .card-danger-zone .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+        /* 🟢 สถานะ: ดี (ฟ้า / น้ำเงินเข้ม) */
+        .card-good { background-color: #bbdefb !important; border-color: #90caf9 !important; }
+        .card-good .pos-label { color: #0d47a1 !important; border-bottom-color: rgba(13,71,161,0.2) !important; }
+
+        /* ⚪ สถานะ: ปานกลาง (ขาว / ดำ) */
+        .card-neutral { background-color: #ffffff !important; border-color: #eeeeee !important; }
+        .card-neutral .pos-label { color: #000000 !important; border-bottom-color: #e0e0e0 !important; }
+
+        /* ⚫ สถานะ: ร้าย (ดำ / ขาว) */
+        .card-bad { background-color: #212121 !important; border-color: #000000 !important; }
+        .card-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+
+        /* 🔴 สถานะ: ร้ายมาก (แดง / ขาว) */
+        .card-very-bad { background-color: #b71c1c !important; border-color: #7f0000 !important; }
+        .card-very-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
         /* 🟡 มั่งคั่ง (Golden Zone): พื้นหลังทอง ตัวหนังสือขาว */
         .card-gold-zone { 
@@ -94,15 +106,16 @@
     const IMAGE_EXT = '.jpg'; 
     const gridLayoutMap12 = ["pos-D1", "pos-C2", "pos-E2", "pos-B3", "pos-F3", "pos-A4", "pos-G4", "pos-F4", "pos-E4", "pos-C4", "pos-B4", "pos-D3"];
     
-    // 💀 รายชื่อไพ่ร้าย
-    const BAD_CARD_IDS = ["401", "412", "408", "430", "431", "433"];
-    // 💰 รายชื่อไพ่ดี
-    const GOOD_CARD_IDS = ["410", "411", "415", "416", "424"];
+    // --- ฐานข้อมูลกลุ่มไพ่ 5 สถานะ ---
+    const VERY_GOOD = ["101", "409", "411", "424"];
+    const GOOD = ["104", "105", "106", "201", "202", "203", "204", "206", "207", "301", "304", "307", "312", "402", "404", "405", "406", "410", "414", "415", "416", "417", "418", "419", "421", "422", "426", "429"];
+    const NEUTRAL = ["102", "209", "210", "211", "303", "305", "309", "311", "403", "407", "420", "435", "436"];
+    const BAD = ["103", "107", "205", "208", "212", "302", "306", "308", "310", "413", "423", "425", "427", "428", "430", "432", "433", "434"];
+    const VERY_BAD = ["401", "408", "412", "431"];
 
-    // ⚠️ ตำแหน่งเตือนภัย
-    const ALERT_POSITIONS = ["ศัตรู/อุปสรรค", "โรค/ภัยพิบัติ"];
-    // ✨ ตำแหน่งมั่งคั่ง
-    const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ความสุขสมหวัง", "โชค/ยศศักดิ์"];
+    // --- กลุ่มทรัพย์สิน (Golden Zone) ---
+    const WEALTH_CARDS = ["410", "411", "415", "416", "424", "429"];
+    const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ความสุขสมหวัง", "การงาน/อาชีพ", "โชค/ยศศักดิ์"];
 
     function processCards() {
         const inputText = document.getElementById('input-text').value;
@@ -141,27 +154,20 @@
             let cardClass = "card-item";
             let labelClass = "pos-label";
 
-            const isBadCard = BAD_CARD_IDS.includes(cardId);
-            const isGoodCard = GOOD_CARD_IDS.includes(cardId);
-            const isAlertPos = ALERT_POSITIONS.includes(posPart);
-            const isWealthPos = WEALTH_POSITIONS.includes(posPart);
-            
-            // 🚨 เงื่อนไขพิเศษ: พระราหู (412)
-            const isPhraRahu = (cardId === "412");
-
-            // --- ตรรกะตัดสินสี ---
-            if ((isAlertPos && isBadCard) || isPhraRahu) {
-                // วิกฤต: แดงขาว (รวมถึงพระราหูในทุกตำแหน่ง)
-                cardClass += " card-danger-zone";
-            } else if (isWealthPos && isGoodCard) {
-                // มั่งคั่ง: ทองขาว
+            // --- ตรรกะตัดสินสี (แยกตามความสำคัญ) ---
+            if (WEALTH_POSITIONS.includes(posPart) && WEALTH_CARDS.includes(cardId)) {
+                // เงื่อนไขสูงสุด: ถ้าเป็นไพ่ให้โชค ในตำแหน่งเกี่ยวกับทรัพย์สิน/การงาน -> ให้เป็นสีทอง
                 cardClass += " card-gold-zone";
-            } else if (isBadCard) {
-                // ไพ่ร้ายที่อื่น: ชื่อแดง
-                labelClass += " pos-red";
-            } else if (isAlertPos) {
-                // ตำแหน่งเตือนภัยทั่วไป: ชื่อดำ
-                labelClass += " pos-black";
+            } else if (VERY_BAD.includes(cardId)) {
+                cardClass += " card-very-bad";
+            } else if (BAD.includes(cardId)) {
+                cardClass += " card-bad";
+            } else if (VERY_GOOD.includes(cardId)) {
+                cardClass += " card-very-good";
+            } else if (GOOD.includes(cardId)) {
+                cardClass += " card-good";
+            } else {
+                cardClass += " card-neutral"; // ปานกลาง หรือหาไม่เจอ
             }
 
             const cardDiv = document.createElement('div');

@@ -113,6 +113,9 @@
     const BAD = ["103", "107", "205", "208", "212", "302", "306", "308", "310", "413", "423", "425", "427", "428", "430", "432", "433", "434"];
     const VERY_BAD = ["401", "408", "412", "431"];
 
+    // --- ตำแหน่งเตือนภัย ---
+    const ALERT_POSITIONS = ["ศัตรู/อุปสรรค", "โรค/ภัยพิบัติ"];
+
     // --- กลุ่มทรัพย์สิน (Golden Zone) ---
     const WEALTH_CARDS = ["410", "411", "415", "416", "424", "429"];
     const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ความสุขสมหวัง", "การงาน/อาชีพ", "โชค/ยศศักดิ์"];
@@ -156,8 +159,17 @@
 
             // --- ตรรกะตัดสินสี (แยกตามความสำคัญ) ---
             if (WEALTH_POSITIONS.includes(posPart) && WEALTH_CARDS.includes(cardId)) {
-                // เงื่อนไขสูงสุด: ถ้าเป็นไพ่ให้โชค ในตำแหน่งเกี่ยวกับทรัพย์สิน/การงาน -> ให้เป็นสีทอง
+                // เงื่อนไขมั่งคั่ง: ได้พื้นหลังสีทอง
                 cardClass += " card-gold-zone";
+            } else if (ALERT_POSITIONS.includes(posPart)) {
+                // เงื่อนไขเตือนภัย (ตกในตำแหน่ง ศัตรู/อุปสรรค หรือ โรค/ภัยพิบัติ)
+                if (BAD.includes(cardId) || VERY_BAD.includes(cardId)) {
+                    // ไพ่ร้าย หรือ ร้ายมาก ตกตำแหน่งเสีย -> เป็น ร้ายมาก (แดง)
+                    cardClass += " card-very-bad";
+                } else {
+                    // ไพ่ปานกลาง, ดี, หรือ ดีมาก ตกตำแหน่งเสีย -> เป็น ร้าย (ดำ)
+                    cardClass += " card-bad";
+                }
             } else if (VERY_BAD.includes(cardId)) {
                 cardClass += " card-very-bad";
             } else if (BAD.includes(cardId)) {

@@ -8,16 +8,27 @@
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
 
         body { font-family: 'Sarabun', sans-serif; background: #e8f4f8; text-align: center; padding: 20px; color: #333; margin: 0; }
-        .container { max-width: 1200px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { max-width: 1200px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative;}
         
+        .btn-top-nav {
+            position: absolute; top: 20px; right: 25px;
+            background: #e67e22; color: white; text-decoration: none; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;
+            display: none; 
+        }
+        .btn-top-nav:hover { background: #d35400; transform: translateY(-2px); }
+
         h2 { color: #d35400; font-family: 'Kanit', sans-serif; font-size: 2.2em; margin-bottom: 5px; }
         .sub-title { color: #7f8c8d; margin-bottom: 25px; font-size: 1.1em; }
         .admin-badge { background: #d35400; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; vertical-align: middle; margin-left: 10px; }
 
         .controls button { padding: 12px 25px; cursor: pointer; background: #2980b9; color: white; border: none; border-radius: 10px; margin: 8px; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .controls button:hover { background: #1f618d; }
+        .btn-special { background: #8e44ad !important; }
+        .btn-special:hover { background: #732d91 !important; }
         
-        input[type="text"] { padding: 15px; width: 85%; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; }
+        input[type="text"], select { padding: 15px; width: 85%; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; font-family: 'Sarabun', sans-serif;}
 
         /* กระดานไพ่แบบ Manual */
         .grid-container { 
@@ -42,30 +53,51 @@
         }
         .card.selected .card-id, .card.selected .card-name { color: white; }
         
-        .selection-order { position: absolute; top: -10px; right: -10px; background: #e74c3c; color: white; width: 25px; height: 25px; border-radius: 50%; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid white; display: none; }
+        /* ปรับป้ายลำดับให้ยืดหยุ่นรองรับข้อความ "ฐาน1" */
+        .selection-order { position: absolute; top: -10px; right: -10px; background: #e74c3c; color: white; min-width: 25px; height: 25px; padding: 0 6px; border-radius: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 13px; border: 2px solid white; display: none; }
         .card.selected .selection-order { display: flex; }
 
         .alert-extra { background: #fff3cd; border-left: 8px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px; font-weight: bold; }
         
         /* ส่วนแสดงผลลัพธ์ */
         .result-section { margin-top: 30px; text-align: left; padding: 30px; border: 2px solid #27ae60; border-radius: 20px; display: none; background: #fff; }
-        .result-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; font-size: 1.15em; display: flex; align-items: center; }
-        .pos-title { font-weight: 500; color: #27ae60; width: 200px; flex-shrink: 0; }
+        .result-item { padding: 8px 15px; border-bottom: 1px solid #f0f0f0; font-size: 1.15em; display: flex; align-items: center; }
+        .pos-title { font-weight: 500; color: #27ae60; width: 150px; flex-shrink: 0; }
         .card-highlight { color: #d35400; font-weight: 700; font-family: 'Kanit', sans-serif; margin-left: 10px; }
+        .graph-section-title { font-size: 1.2em; color: #8e44ad; margin-top: 20px; border-bottom: 2px solid #8e44ad; padding-bottom: 5px; font-family: 'Kanit', sans-serif;}
         
         .btn-copy { background: #2980b9; width: 100%; font-size: 1.1em; padding: 18px; margin-top: 15px; border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: bold;}
         .btn-reset { background: #e74c3c; width: 100%; margin-top: 10px; padding: 12px; border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: bold;}
+
+        /* ปุ่มยืนยันสำหรับกราฟชีวิต */
+        .graph-confirm-btn { background: #f39c12; font-size: 16px; padding: 10px 20px; margin-top: 10px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(243, 156, 18, 0); } 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); } }
+
+        @media (max-width: 768px) {
+            .btn-top-nav { position: static; display: inline-block; margin-bottom: 15px; }
+            .grid-container { grid-template-columns: repeat(5, 1fr); }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <button onclick="goHome()" id="btn-back-home" class="btn-top-nav">🏠 กลับไปหน้าเลือกโหมดใหม่</button>
+
     <h2>🛠️ ระบบจัดการไพ่ <span class="admin-badge">For Admin Only</span></h2>
     <p class="sub-title">เลือกรหัสไพ่ตามที่เจ้าชะตาเปิดได้จริง (เรียงลำดับ 101-436)</p>
     
     <div id="main-controls" class="controls">
         <button onclick="startFlow(3)">1. เลือกไพ่แบบ 3 ใบ (ถามตอบ)</button>
         <button onclick="startFlow(12)">2. เลือกไพ่แบบ 12 ใบ (พื้นดวง)</button>
+        <button class="btn-special" onclick="startGraphMode()">3. เลือกไพ่แบบกราฟชีวิต (แยกหัวข้อ)</button>
+    </div>
+
+    <div id="graph-setup-area" style="display:none;">
+        <h3 style="color: #8e44ad;">🔮 เลือกหัวข้อการทำนาย (กราฟชีวิต)</h3>
+        <select id="graph-topic-select"></select>
+        <br>
+        <button class="controls" style="background:#27ae60; padding:15px 30px; font-size:18px; margin-top:20px; color:white; border:none; border-radius:10px; cursor:pointer;" onclick="beginGraphSelection()">เริ่มเลือกไพ่หัวข้อนี้</button>
     </div>
 
     <div id="card-selection-area" style="display:none;">
@@ -74,9 +106,15 @@
             <input type="text" id="user-question" placeholder="พิมพ์คำถามที่นี่...">
         </div>
         
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-            <div id="status-msg" style="font-weight: bold; color: #2980b9; font-size: 1.2em;"></div>
-            <button onclick="resetSelection()" style="background:#e74c3c; border:none; color:white; padding:8px 15px; border-radius:5px; cursor:pointer;">🔄 ล้างการเลือกไพ่</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-wrap: wrap;">
+            <div id="status-msg" style="font-weight: bold; color: #2980b9; font-size: 1.2em; margin-bottom: 10px;"></div>
+            
+            <div id="graph-controls" style="display: none;">
+                <button id="btn-confirm-base" class="graph-confirm-btn" style="border:none; color:white; border-radius:5px; cursor:pointer;" onclick="confirmBaseCards()">✅ ยืนยันไพ่ฐาน (ไปต่อ)</button>
+                <button id="btn-confirm-detail" class="graph-confirm-btn" style="border:none; color:white; border-radius:5px; cursor:pointer; display:none;" onclick="confirmDetailCards()">✅ ยืนยันไพ่รายละเอียด (สรุปผล)</button>
+            </div>
+
+            <button onclick="resetSelection()" style="background:#e74c3c; border:none; color:white; padding:8px 15px; border-radius:5px; cursor:pointer; margin-bottom: 10px;">🔄 ล้างการเลือกไพ่</button>
         </div>
         
         <div id="extra-alert" class="alert-extra" style="display:none;">
@@ -103,49 +141,123 @@
         401:"พระเพลิง", 402:"พระแม่ปาราวตี", 403:"พระขันธกุมาร", 404:"พระพิรุณ", 405:"พระพรหมฤาษี", 406:"พระนางสุรัสวดี", 407:"ท้าววิรุฬหก", 408:"พระอสุรินทร์ราหู", 409:"พระเกตุมงคล", 410:"ท้าวเวสสุวรรณ", 411:"พระพิฆเนศ", 412:"พระราหู", 413:"พระศิวะ", 414:"พระอินทร์", 415:"พระลักษมี", 416:"ท้าวธตรฐ", 417:"พระวิษณุกรม", 418:"พระนารายณ์ทรงสุบรรณ", 419:"พระเทวฤาษี", 420:"รจนากับสังข์ทอง", 421:"พระแม่ธรณี", 422:"พระรามกับสีดา", 423:"พญาครุฑกับนางกากี", 424:"พระแม่โพสพ", 425:"หนุมานกับนางเบญจกาย", 426:"กามเทพ", 427:"เมขลากับรามสูร", 428:"พรานบุญจับนางโมราห์", 429:"พระแม่นางกวัก", 430:"ทศกัณฐ์ออกรบ", 431:"พระยายมราช", 432:"โมรา", 433:"ไกรทองปราบชาละวัน", 434:"พระอภัยมณีกับนางผีเสื้อสมุทร", 435:"ความไม่เที่ยง", 436:"สัจธรรม"
     };
 
+    const GRAPH_TOPICS = [
+        "พื้นดวงชะตา", "ทรัพย์สินเงินทอง", "บ้านช่อง ครอบครัว และ ทรัพย์สมบัติ", "เครือญาติและพี่น้อง",
+        "ลูก ลูกน้อง และบริวารที่ดูแล", "ศัตรูและอุปสรรค", "ความรักความสัมพันธ์(คู่ครอง-คนรัก)",
+        "สุขภาพ-โรคตามพื้นดวง และภัยพิบัติที่ต้องระวัง", "ความสุขความสมหวัง", "การประกอบอาชีพ-การทำงาน",
+        "โชคลาภ และตำแหน่ง ยศศักดิ์", "สรุปดวงชะตา และ บั้นปลาย"
+    ];
+
     const EXTRA_CARD_IDS = [201, 208, 211];
     const POS_3 = ["ไพ่สำคัญของคำถาม", "สถานการณ์/ความรู้สึก", "คำแนะนำ/สิ่งที่ควรทำ", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม"];
     const POS_12 = ["พื้นดวงชะตา", "ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ญาติพี่น้อง", "ลูกน้อง/บริวาร", "ศัตรู/อุปสรรค", "คู่ครอง/คนรัก", "โรค/ภัยพิบัติ", "ความสุขสมหวัง", "การงาน/อาชีพ", "โชค/ยศศักดิ์", "สรุปดวงชะตา"];
 
-    let currentMode = 0; let selectedCards = []; let maxAllowed = 0;
+    let currentMode = 0; 
+    let selectedCards = []; 
+    let maxAllowed = 0;
     
-    // ดึงรหัสไพ่ทั้งหมด และเรียงลำดับจากน้อยไปมาก (101 -> 436)
+    // ตัวแปรเฉพาะโหมดกราฟชีวิต
+    let graphPhase = ''; // 'base' หรือ 'detail'
+    let baseCards = [];
+    let detailCards = [];
+    let selectedGraphTopic = "";
+
     let sortedDeck = Object.keys(CARD_DATA).map(Number).sort((a, b) => a - b);
 
+    // --- เริ่มโหมด 3 ใบ หรือ 12 ใบ ---
     function startFlow(mode) { 
         currentMode = mode; 
         maxAllowed = mode; 
         
         document.getElementById('main-controls').style.display = 'none';
+        document.getElementById('graph-setup-area').style.display = 'none';
         document.getElementById('card-selection-area').style.display = 'block';
         document.getElementById('card-board').style.display = 'grid';
         document.getElementById('question-block').style.display = (currentMode === 3) ? 'block' : 'none';
         document.getElementById('result-area').style.display = 'none';
+        document.getElementById('graph-controls').style.display = 'none';
+        document.getElementById('btn-back-home').style.display = 'block';
+        
+        resetSelection();
+    }
+
+    // --- เริ่มโหมดกราฟชีวิต (ขั้นเลือกหัวข้อ) ---
+    function startGraphMode() {
+        currentMode = 'graph';
+        document.getElementById('main-controls').style.display = 'none';
+        document.getElementById('card-selection-area').style.display = 'none';
+        document.getElementById('result-area').style.display = 'none';
+        document.getElementById('graph-setup-area').style.display = 'block';
+        document.getElementById('btn-back-home').style.display = 'block';
+        
+        const select = document.getElementById('graph-topic-select');
+        if (select.options.length === 0) {
+            GRAPH_TOPICS.forEach(topic => {
+                let opt = document.createElement('option');
+                opt.value = topic;
+                opt.innerHTML = topic;
+                select.appendChild(opt);
+            });
+        }
+    }
+
+    // --- เริ่มโหมดกราฟชีวิต (เข้ากระดานเลือกไพ่ฐาน) ---
+    function beginGraphSelection() {
+        selectedGraphTopic = document.getElementById('graph-topic-select').value;
+        
+        document.getElementById('graph-setup-area').style.display = 'none';
+        document.getElementById('card-selection-area').style.display = 'block';
+        document.getElementById('card-board').style.display = 'grid';
+        document.getElementById('question-block').style.display = 'none';
+        document.getElementById('graph-controls').style.display = 'block';
         
         resetSelection();
     }
 
     function resetSelection() {
         selectedCards = []; 
-        maxAllowed = currentMode;
         document.getElementById('result-area').style.display = 'none';
         document.getElementById('extra-alert').style.display = 'none';
+        
+        if (currentMode === 'graph') {
+            graphPhase = 'base';
+            baseCards = [];
+            detailCards = [];
+            document.getElementById('btn-confirm-base').style.display = 'inline-block';
+            document.getElementById('btn-confirm-detail').style.display = 'none';
+        } else {
+            maxAllowed = currentMode;
+        }
+
         updateStatusMsg();
-        renderBoard();
+        
+        document.querySelectorAll('.card.selected').forEach(el => {
+            el.classList.remove('selected');
+        });
+        
+        renderBoard(); 
     }
 
     function goHome() {
         document.getElementById('main-controls').style.display = 'block';
         document.getElementById('card-selection-area').style.display = 'none';
+        document.getElementById('graph-setup-area').style.display = 'none';
         document.getElementById('result-area').style.display = 'none';
+        document.getElementById('btn-back-home').style.display = 'none';
         document.getElementById('user-question').value = "";
     }
 
     function updateStatusMsg() {
         if (currentMode === 3) {
             document.getElementById('status-msg').innerText = `👉 เลือกลำดับไพ่ (${selectedCards.length}/${maxAllowed} ใบ)`;
-        } else {
+        } else if (currentMode === 12) {
             document.getElementById('status-msg').innerText = `👉 เลือกไพ่พื้นดวง (${selectedCards.length}/12 ใบ)`;
+        } else if (currentMode === 'graph') {
+            if (graphPhase === 'base') {
+                document.getElementById('status-msg').innerHTML = `<span style="color:#e74c3c;">📌 หัวข้อ: ${selectedGraphTopic}</span><br>👉 ขั้นที่ 1: เลือก "ไพ่ฐาน" (1-3 ใบ)`;
+            } else {
+                document.getElementById('status-msg').innerHTML = `<span style="color:#e74c3c;">📌 หัวข้อ: ${selectedGraphTopic}</span><br>👉 ขั้นที่ 2: เลือก "ไพ่รายละเอียด" (2-9 ใบ)`;
+            }
         }
     }
 
@@ -158,30 +270,74 @@
             cardDiv.className = 'card';
             cardDiv.id = `card-${cardId}`;
             
-            cardDiv.innerHTML = `
-                <div class="selection-order"></div>
-                <div class="card-id">${cardId}</div>
-                <div class="card-name">${CARD_DATA[cardId]}</div>
-            `;
+            if (selectedCards.includes(cardId)) {
+                cardDiv.classList.add('selected');
+                let badgeText = "";
+                
+                if (currentMode === 'graph') {
+                    if (baseCards.includes(cardId)) badgeText = "ฐาน" + (baseCards.indexOf(cardId) + 1);
+                    else if (detailCards.includes(cardId)) badgeText = "ขยาย" + (detailCards.indexOf(cardId) + 1);
+                } else {
+                    badgeText = selectedCards.indexOf(cardId) + 1;
+                }
+
+                cardDiv.innerHTML = `
+                    <div class="selection-order" style="display:flex;">${badgeText}</div>
+                    <div class="card-id">${cardId}</div>
+                    <div class="card-name">${CARD_DATA[cardId]}</div>
+                `;
+            } else {
+                cardDiv.innerHTML = `
+                    <div class="selection-order"></div>
+                    <div class="card-id">${cardId}</div>
+                    <div class="card-name">${CARD_DATA[cardId]}</div>
+                `;
+            }
+
             cardDiv.onclick = () => selectCard(cardId, cardDiv); 
             board.appendChild(cardDiv);
         });
     }
 
     function selectCard(cardId, element) {
-        // ป้องกันการเลือกไพ่ซ้ำ
         if (selectedCards.includes(cardId)) return;
         
+        // --- ตรรกะสำหรับโหมดกราฟชีวิต ---
+        if (currentMode === 'graph') {
+            if (graphPhase === 'base') {
+                if (baseCards.length < 3) {
+                    baseCards.push(cardId);
+                    selectedCards.push(cardId);
+                    element.classList.add('selected');
+                    element.querySelector('.selection-order').innerText = 'ฐาน' + baseCards.length;
+                    element.querySelector('.selection-order').style.display = 'flex';
+                } else {
+                    alert("⚠️ ไพ่ฐาน เลือกได้สูงสุด 3 ใบครับ กรุณากดปุ่ม ยืนยันไพ่ฐาน");
+                }
+            } else if (graphPhase === 'detail') {
+                if (detailCards.length < 9) {
+                    detailCards.push(cardId);
+                    selectedCards.push(cardId);
+                    element.classList.add('selected');
+                    element.querySelector('.selection-order').innerText = 'ขยาย' + detailCards.length;
+                    element.querySelector('.selection-order').style.display = 'flex';
+                } else {
+                    alert("⚠️ ไพ่รายละเอียด เลือกได้สูงสุด 9 ใบครับ กรุณากดปุ่ม ยืนยันไพ่รายละเอียด");
+                }
+            }
+            updateStatusMsg();
+            return; // จบการทำงานของโหมดกราฟ
+        }
+
+        // --- ตรรกะสำหรับโหมด 3 ใบ และ 12 ใบ ---
         if (selectedCards.length < maxAllowed) {
             selectedCards.push(cardId); 
             element.classList.add('selected');
-            
-            // แสดงลำดับที่เลือกไว้มุมขวาบนของไพ่
             element.querySelector('.selection-order').innerText = selectedCards.length;
+            element.querySelector('.selection-order').style.display = 'flex';
             
             updateStatusMsg();
             
-            // ตรรกะไพ่พิเศษสำหรับแบบ 3 ใบ
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length < 6 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++; 
                 document.getElementById('extra-alert').style.display = 'block';
@@ -193,6 +349,26 @@
             
             if (selectedCards.length === maxAllowed) showResults();
         }
+    }
+
+    // --- ฟังก์ชันยืนยันของกราฟชีวิต ---
+    function confirmBaseCards() {
+        if (baseCards.length < 1) {
+            alert("⚠️ กรุณาเลือกไพ่ฐานอย่างน้อย 1 ใบครับ");
+            return;
+        }
+        graphPhase = 'detail';
+        document.getElementById('btn-confirm-base').style.display = 'none';
+        document.getElementById('btn-confirm-detail').style.display = 'inline-block';
+        updateStatusMsg();
+    }
+
+    function confirmDetailCards() {
+        if (detailCards.length < 2) {
+            alert("⚠️ กรุณาเลือกไพ่รายละเอียดอย่างน้อย 2 ใบครับ");
+            return;
+        }
+        showGraphResults();
     }
 
     function showResults() {
@@ -213,22 +389,49 @@
         document.getElementById('status-msg').innerText = "✅ เลือกไพ่เสร็จสมบูรณ์";
     }
 
-    function copyResult() {
-        const question = (currentMode === 3) ? document.getElementById('user-question').value : "วิเคราะห์พื้นดวงชะตา";
-        const posNames = (currentMode === 3) ? POS_3 : POS_12;
+    function showGraphResults() {
+        const resArea = document.getElementById('result-area');
+        const listDiv = document.getElementById('selected-list');
+        resArea.style.display = 'block'; 
+        listDiv.innerHTML = "";
         
-        let textToCopy = `🔮 ผลการเลือกไพ่พรหมญาณ\n`;
-        textToCopy += `🔮 รูปแบบ : แบบ ${currentMode} ใบ\n`;
-        textToCopy += `--------------------------\n`;
-        textToCopy += `❓ คำถาม: ${question}\n`;
-        textToCopy += `--------------------------\n`;
+        listDiv.innerHTML += `<div class="graph-section-title">📌 หัวข้อ: ${selectedGraphTopic}</div>`;
         
-        selectedCards.forEach((id, index) => { 
-            textToCopy += `${index + 1}. ${posNames[index] || 'ขยายความเพิ่มเติม'}: ${id} ${CARD_DATA[id]}\n`; 
+        listDiv.innerHTML += `<div style="font-weight:bold; margin-top:15px; color:#c0392b;">🃏 ไพ่ฐาน:</div>`;
+        baseCards.forEach((id, index) => {
+            listDiv.innerHTML += `<div class="result-item"><span class="pos-title" style="width:100px;">ฐานที่ ${index+1}:</span><span class="card-highlight">${id} ${CARD_DATA[id]}</span></div>`;
         });
+
+        listDiv.innerHTML += `<div style="font-weight:bold; margin-top:15px; color:#2980b9;">🃏 ไพ่รายละเอียด (ขยายความ):</div>`;
+        detailCards.forEach((id, index) => {
+            listDiv.innerHTML += `<div class="result-item"><span class="pos-title" style="width:100px;">ใบที่ ${index+1}:</span><span class="card-highlight">${id} ${CARD_DATA[id]}</span></div>`;
+        });
+
+        resArea.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('status-msg').innerText = "✅ สรุปผลกราฟชีวิตเสร็จสมบูรณ์";
+    }
+
+    function copyResult() {
+        let textToCopy = "";
+
+        if (currentMode === 'graph') {
+            textToCopy = `🔮 ผลการเลือกไพ่พรหมญาณ\n🔮 รูปแบบ : แบบกราฟชีวิต (เจาะลึก)\n--------------------------\n📌 หัวข้อ: ${selectedGraphTopic}\n--------------------------\n`;
+            
+            textToCopy += `[ ไพ่ฐาน ]\n`;
+            baseCards.forEach((id, index) => { textToCopy += `${index + 1}. ${id} ${CARD_DATA[id]}\n`; });
+            
+            textToCopy += `\n[ ไพ่รายละเอียด ]\n`;
+            detailCards.forEach((id, index) => { textToCopy += `${index + 1}. ${id} ${CARD_DATA[id]}\n`; });
+        } else {
+            const question = (currentMode === 3) ? document.getElementById('user-question').value : "วิเคราะห์พื้นดวงชะตา";
+            const posNames = (currentMode === 3) ? POS_3 : POS_12;
+            
+            textToCopy = `🔮 ผลการเลือกไพ่พรหมญาณ\n🔮 รูปแบบ : แบบ ${currentMode} ใบ\n--------------------------\n❓ คำถาม: ${question}\n--------------------------\n`;
+            selectedCards.forEach((id, index) => { textToCopy += `${index + 1}. ${posNames[index] || 'ขยายความเพิ่มเติม'}: ${id} ${CARD_DATA[id]}\n`; });
+        }
         
         navigator.clipboard.writeText(textToCopy).then(() => { 
-            document.getElementById('copy-status').innerText = "✅ คัดลอกข้อความสำเร็จ! นำไปวางใน show.html ได้เลย"; 
+            document.getElementById('copy-status').innerText = "✅ คัดลอกข้อความสำเร็จ! นำไปวางส่งให้ลูกค้าได้เลย"; 
             setTimeout(() => { document.getElementById('copy-status').innerText = ""; }, 3000);
         });
     }

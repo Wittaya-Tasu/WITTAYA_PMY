@@ -35,20 +35,31 @@
         /* กระดานไพ่ */
         .grid-container { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; 
-            margin: 20px auto; padding: 15px; background: #2c3e50; border-radius: 12px; display: none;
+            margin: 20px auto; padding: 20px; 
+            background: #ecf0f1; /* เปลี่ยนเป็นสีเทาอ่อน */
+            border-radius: 12px; 
+            border: 2px solid #bdc3c7; /* เพิ่มขอบกระดานให้ดูมีมิติ */
+            display: none;
         }
         
         /* รูปแบบไพ่ก่อนเลือก (โชว์รูปหลังไพ่) */
         .card { 
             aspect-ratio: 2/3; 
-            background-image: url('images_small/back.jpg'); /* ใส่รูปหลังไพ่ตรงนี้ */
+            background-image: url('images_small/back.jpg'); 
             background-size: cover;
             background-position: center;
-            background-color: #34495e; /* สีสำรองกรณีรูปไม่ขึ้น */
+            background-color: #bdc3c7; 
             color: white; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; border-radius: 8px; border: 1px solid #000;
+            cursor: pointer; border-radius: 8px; 
+            border: 1px solid #7f8c8d; /* ปรับสีกรอบไพ่ให้ซอฟต์ลง */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4); /* เพิ่มเงาให้ไพ่ลอยเด่นจากพื้นสีเทา */
             transition: all 0.2s; user-select: none; position: relative;
             overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-3px); /* เวลานำเมาส์ไปชี้ ไพ่จะขยับลอยขึ้นนิดนึง */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
         }
 
         /* ตัวเลข 1-67 ตรงกลางไพ่ (ใหญ่ โปร่งแสง) */
@@ -56,28 +67,29 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 2.5em; /* ขนาดตัวเลข ใหญ่ชัดเจน */
+            font-size: 2.5em; 
             font-family: 'Kanit', sans-serif;
             font-weight: bold;
-            color: rgba(255, 255, 255, 0.5); /* สีขาว โปร่งแสง 50% */
-            z-index: 1; /* ให้อยู่เหนือรูปหลังไพ่ */
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* เพิ่มเงาให้อ่านง่ายขึ้นบนรูปที่อาจจะสว่าง */
-            pointer-events: none; /* ไม่ให้รบกวนการคลิก */
+            color: rgba(255, 255, 255, 0.5); 
+            z-index: 1; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+            pointer-events: none; 
         }
         
-        .card-index { position: absolute; top: 4px; left: 5px; font-size: 10px; color: rgba(255,255,255,0.4); display: none;} /* ซ่อนตัวเลขมุมซ้ายบนเดิม */
+        .card-index { position: absolute; top: 4px; left: 5px; font-size: 10px; color: rgba(255,255,255,0.4); display: none;} 
 
         /* รูปแบบไพ่ตอนที่ถูกเลือกแล้ว */
         .card.selected { 
-            background-image: none; /* เอารูปหลังไพ่ออก */
-            background: linear-gradient(145deg, #e67e22, #d35400); /* เปลี่ยนเป็นสีส้ม/ทอง */
+            background-image: none; 
+            background: linear-gradient(145deg, #e67e22, #d35400); 
             font-size: 32px; font-family: 'Kanit', sans-serif; font-weight: bold;
             box-shadow: 0 0 15px rgba(230, 126, 34, 0.6); border: 2px solid #fff;
             color: #fff;
+            transform: translateY(0); /* รีเซ็ตการลอยเมื่อถูกเลือก */
         }
         
         .card.selected .card-bg-number {
-            display: none; /* ซ่อนตัวเลข 1-67 ไปเลย */
+            display: none; 
         }
 
         button { padding: 12px 25px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 10px; margin: 8px; font-size: 16px; font-weight: bold; transition: 0.3s; }
@@ -96,6 +108,11 @@
         
         .btn-copy { background: #2980b9; width: 100%; font-size: 1.1em; padding: 18px; margin-top: 15px; }
         .btn-home { background: #95a5a6; width: 100%; margin-top: 10px; }
+        
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: repeat(5, 1fr); padding: 10px; gap: 8px;}
+            .card-bg-number { font-size: 1.8em; }
+        }
     </style>
 </head>
 <body>

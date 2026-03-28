@@ -23,6 +23,27 @@
 
         #capture-area { padding: 30px; background: white; border-radius: 15px; }
         #result-display { margin-top: 20px; display: none; }
+        
+        /* 🌟 ส่วนของไพ่ครู (Master Cards) */
+        .master-cards-layout {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 2px dashed #bdc3c7; /* เส้นประคั่นแบ่งโซนไพ่ครูกับไพ่ทายทัก */
+        }
+        .master-card {
+            flex: 1;
+            max-width: 110px; /* ขนาดกำลังดี ไม่แย่งซีนไพ่หลัก */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 2px solid #d4af37; /* กรอบสีทอง */
+            background: #fff;
+        }
+        .master-card img { width: 100%; display: block; }
+
         .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
 
         .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; transition: 0.3s; }
@@ -54,7 +75,7 @@
         .card-very-bad { background-color: #b71c1c !important; border-color: #7f0000 !important; }
         .card-very-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* 🟡 มั่งคั่ง (Golden Zone): พื้นหลังทอง ตัวหนังสือขาว */
+        /* 🟡 มั่งคั่ง (Golden Zone) */
         .card-gold-zone { 
             background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; 
             border-color: #aa771c !important; 
@@ -94,6 +115,8 @@
 
     <div id="capture-area">
         <div id="result-display">
+            <div id="master-cards-area" class="master-cards-layout"></div>
+            
             <div id="display-question" class="question-box"></div>
             <div id="card-area"></div>
             <p style="font-size: 12px; color: #bdc3c7; margin-top: 20px; text-align: center;">พยากรณ์โดย หมอวิทยา ธรรมนาย</p>
@@ -125,13 +148,20 @@
         const resultDisplay = document.getElementById('result-display');
         const displayQuestion = document.getElementById('display-question');
         const cardArea = document.getElementById('card-area');
+        const masterArea = document.getElementById('master-cards-area');
         const btnSave = document.getElementById('btnSaveImg');
 
         if (!inputText.trim()) { alert("กรุณาวางข้อความก่อนครับ"); return; }
 
         cardArea.innerHTML = ""; 
+        masterArea.innerHTML = ""; // ล้างไพ่ครูเก่าออกก่อน
         resultDisplay.style.display = 'block';
         btnSave.style.display = 'inline-block';
+
+        // 🌟 สร้างไพ่ครู (501 - 506) แบบอัตโนมัติ
+        for (let i = 501; i <= 506; i++) {
+            masterArea.innerHTML += `<div class="master-card"><img src="${IMAGE_PATH}${i}${IMAGE_EXT}" crossorigin="anonymous"></div>`;
+        }
 
         const lines = inputText.split('\n');
         let question = "ดูดวงภาพรวม";
@@ -159,15 +189,11 @@
 
             // --- ตรรกะตัดสินสี (แยกตามความสำคัญ) ---
             if (WEALTH_POSITIONS.includes(posPart) && WEALTH_CARDS.includes(cardId)) {
-                // เงื่อนไขมั่งคั่ง: ได้พื้นหลังสีทอง
                 cardClass += " card-gold-zone";
             } else if (ALERT_POSITIONS.includes(posPart)) {
-                // เงื่อนไขเตือนภัย (ตกในตำแหน่ง ศัตรู/อุปสรรค หรือ โรค/ภัยพิบัติ)
                 if (BAD.includes(cardId) || VERY_BAD.includes(cardId)) {
-                    // ไพ่ร้าย หรือ ร้ายมาก ตกตำแหน่งเสีย -> เป็น ร้ายมาก (แดง)
                     cardClass += " card-very-bad";
                 } else {
-                    // ไพ่ปานกลาง, ดี, หรือ ดีมาก ตกตำแหน่งเสีย -> เป็น ร้าย (ดำ)
                     cardClass += " card-bad";
                 }
             } else if (VERY_BAD.includes(cardId)) {
@@ -179,7 +205,7 @@
             } else if (GOOD.includes(cardId)) {
                 cardClass += " card-good";
             } else {
-                cardClass += " card-neutral"; // ปานกลาง หรือหาไม่เจอ
+                cardClass += " card-neutral"; 
             }
 
             const cardDiv = document.createElement('div');

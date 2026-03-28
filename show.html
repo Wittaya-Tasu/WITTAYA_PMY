@@ -172,8 +172,14 @@
             if (/^\d+\./.test(line) && line.includes(':')) cardLines.push(line);
         });
 
-        displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
         const totalCards = cardLines.length;
+
+        // 🌟 เปลี่ยนข้อความถ้าเป็นแบบ 12 ใบ
+        if (totalCards === 12) {
+            displayQuestion.innerHTML = `🌟 <b>ไพ่พรหมญาณ 12 ใบ : พื้นดวงชะตาระยะสั้น (ปัจจุบัน - 3 เดือน)</b>`;
+        } else {
+            displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
+        }
 
         if (totalCards === 12) cardArea.className = 'custom-layout-12';
         else if (totalCards >= 3) cardArea.className = 'custom-layout-3to6';

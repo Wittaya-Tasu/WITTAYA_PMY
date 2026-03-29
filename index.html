@@ -36,9 +36,9 @@
         .grid-container { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; 
             margin: 20px auto; padding: 20px; 
-            background: #ecf0f1; /* เปลี่ยนเป็นสีเทาอ่อน */
+            background: #ecf0f1; 
             border-radius: 12px; 
-            border: 2px solid #bdc3c7; /* เพิ่มขอบกระดานให้ดูมีมิติ */
+            border: 2px solid #bdc3c7; 
             display: none;
         }
         
@@ -51,14 +51,14 @@
             background-color: #bdc3c7; 
             color: white; display: flex; align-items: center; justify-content: center; 
             cursor: pointer; border-radius: 8px; 
-            border: 1px solid #7f8c8d; /* ปรับสีกรอบไพ่ให้ซอฟต์ลง */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4); /* เพิ่มเงาให้ไพ่ลอยเด่นจากพื้นสีเทา */
+            border: 1px solid #7f8c8d; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4); 
             transition: all 0.2s; user-select: none; position: relative;
             overflow: hidden;
         }
 
         .card:hover {
-            transform: translateY(-3px); /* เวลานำเมาส์ไปชี้ ไพ่จะขยับลอยขึ้นนิดนึง */
+            transform: translateY(-3px); 
             box-shadow: 0 6px 12px rgba(0,0,0,0.5);
         }
 
@@ -85,7 +85,7 @@
             font-size: 32px; font-family: 'Kanit', sans-serif; font-weight: bold;
             box-shadow: 0 0 15px rgba(230, 126, 34, 0.6); border: 2px solid #fff;
             color: #fff;
-            transform: translateY(0); /* รีเซ็ตการลอยเมื่อถูกเลือก */
+            transform: translateY(0); 
         }
         
         .card.selected .card-bg-number {
@@ -121,9 +121,9 @@
     <div class="modal-box">
         <div style="font-family: 'Kanit', sans-serif; font-size: 1.8em; color: #f1c40f; margin-bottom: 20px;">"คำอธิษฐานก่อนเปิดไพ่"</div>
         <div class="prayer-text">
-            ข้าพเจ้า...(ชื่อ นามสกุล)... ขอถามไพ่พรหมญาณว่า<br>
-            ดวงชะตาของข้าพเจ้าจะเป็นเช่นไร<br>
-            หากมีเรื่องใด ที่ข้าพเจ้าควรรับรู้ และต้องระมัดระวัง<br>
+            ข้าพเจ้า.....(ชื่อ นามสกุล)..... ขอถามไพ่พรหมญาณว่า<br>
+            ดวงชะตาของข้าพเจ้าจะเป็นเช่นไรบ้าง<br>
+            หากมีเรื่องใด ที่ข้าพเจ้าควรรับรู้ และ ต้องระมัดระวัง<br>
             ขอให้ ครูบาอาจารย์ เทพ พรหม สิ่งศักดิ์สิทธิ์และเทวดาที่อยู่ในไพ่<br>
             โปรดเมตตาบอก มาให้ข้าพเจ้าได้รับรู้ รับทราบ<br>
             ขอให้ข้าพเจ้าได้คำตอบ ในสิ่งที่อยากรู้ ด้วยเทอญ
@@ -160,7 +160,12 @@
             <input type="text" id="user-question" placeholder="พิมพ์คำถามของท่านที่นี่...">
         </div>
         <div id="status-msg" style="margin-top:15px; font-weight: bold; color: #2980b9; font-size: 1.1em;"></div>
-        <button onclick="shuffleAndReset()" id="btn-shuffle" style="background:#34495e; font-size: 14px; padding: 8px 15px;">🔄 สลับตำแหน่งไพ่ใหม่</button>
+        
+        <div style="margin-top: 10px;">
+            <button onclick="shuffleAndReset()" id="btn-shuffle" style="background:#34495e; font-size: 14px; padding: 8px 15px;">🔄 สลับตำแหน่งไพ่ใหม่</button>
+            <button onclick="autoPickCards()" id="btn-auto" style="background:#8e44ad; font-size: 14px; padding: 8px 15px;">🤖 ให้ระบบสุ่มเลือกไพ่ (Auto)</button>
+        </div>
+        
         <div id="card-board" class="grid-container"></div>
     </div>
 
@@ -182,8 +187,8 @@
     };
 
     const EXTRA_CARD_IDS = [201, 208, 211];
-    const POS_3 = ["ไพ่สำคัญของคำถาม", "สถานการณ์-ความรู้สึก", "คำแนะนำ-สิ่งที่ควรทำ", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม"];
-    const POS_12 = ["พื้นดวง", "ทรัพย์สิน", "บ้านช่อง", "ญาติพี่น้อง", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "สรุป"];
+    const POS_3 = ["ไพ่สำคัญของคำถาม", "สถานการณ์/ความรู้สึก", "คำแนะนำ/สิ่งที่ควรทำ", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม"];
+    const POS_12 = ["พื้นดวงชะตา", "ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ญาติพี่น้อง", "ลูกน้อง/บริวาร", "ศัตรู/อุปสรรค", "คู่ครอง/คนรัก", "โรค/ภัยพิบัติ", "ความสุขสมหวัง", "การงาน/อาชีพ", "โชค/ยศศักดิ์", "สรุปดวงชะตา"];
 
     let currentMode = 0; let selectedCards = []; let maxAllowed = 0;
     let deck = Object.keys(CARD_DATA).map(Number);
@@ -219,7 +224,7 @@
         deck.forEach((cardId, index) => {
             const cardDiv = document.createElement('div'); 
             cardDiv.className = 'card';
-            // ใส่ตัวเลขตรงกลางไพ่
+            cardDiv.id = `client-card-${cardId}`; // เพิ่ม ID ไว้เพื่อให้อ้างอิงตอน Auto Pick ได้
             cardDiv.innerHTML = `<span class="card-bg-number">${index + 1}</span>`;
             cardDiv.onclick = () => selectCard(cardId, cardDiv); 
             board.appendChild(cardDiv);
@@ -234,17 +239,54 @@
         if (selectedCards.length < maxAllowed) {
             selectedCards.push(cardId); 
             element.classList.add('selected');
-            // แทนที่เนื้อหาในไพ่ด้วยลำดับที่เลือก
             element.innerHTML = `${selectedCards.length}`;
             
             // ตรรกะไพ่พิเศษ 3 ใบแรกของแบบ 3 ใบ
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length < 6 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
-                document.getElementById('extra-card-popup').style.display = 'flex'; // แสดง Popup
+                document.getElementById('extra-card-popup').style.display = 'flex';
                 document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์จั่วเพิ่ม (ใบที่ ${selectedCards.length+1})`;
                 return;
             }
             if (selectedCards.length === maxAllowed) showResults();
+        }
+    }
+
+    // 🌟 ฟังก์ชันใหม่: ให้ระบบสุ่มไพ่อัตโนมัติ 🌟
+    function autoPickCards() {
+        if (currentMode === 3 && document.getElementById('user-question').value.trim() === "") {
+            alert("กรุณาพิมพ์คำถามก่อนครับ"); 
+            return;
+        }
+
+        // หาไพ่ที่ยังไม่ถูกเลือกในกอง
+        let unpickedCards = deck.filter(id => !selectedCards.includes(id));
+        unpickedCards.sort(() => Math.random() - 0.5); // สับไพ่ที่เหลืออีกรอบ
+
+        // วนลูปเลือกไพ่จนกว่าจะครบตามโควต้า (maxAllowed อาจเพิ่มขึ้นถ้าระบบจับได้ไพ่พิเศษ)
+        while (selectedCards.length < maxAllowed) {
+            let cardId = unpickedCards.pop();
+            selectedCards.push(cardId);
+            
+            // อัปเดตหน้าตาไพ่บนกระดานให้เปลี่ยนเป็นสีส้ม/ทอง
+            let cardDiv = document.getElementById(`client-card-${cardId}`);
+            if(cardDiv) {
+                cardDiv.classList.add('selected');
+                cardDiv.innerHTML = `${selectedCards.length}`;
+            }
+
+            // ตรรกะไพ่พิเศษสำหรับโหมด 3 ใบ (จั่วเพิ่มแบบเงียบๆ ไม่ต้องโชว์ Popup เพื่อความต่อเนื่อง)
+            if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length < 6 && EXTRA_CARD_IDS.includes(cardId)) {
+                maxAllowed++;
+            }
+        }
+        
+        // เมื่อเสร็จแล้ว โชว์ผลลัพธ์
+        showResults();
+
+        // แจ้งเตือนเล็กน้อยถ้าระบบช่วยจั่วไพ่พิเศษให้
+        if (currentMode === 3 && maxAllowed > 3) {
+            document.getElementById('status-msg').innerHTML = `✨ <b>ระบบพบไพ่พิเศษ!</b> จึงจั่วเพิ่มให้อัตโนมัติ (รวม ${maxAllowed} ใบ)`;
         }
     }
 
@@ -257,7 +299,11 @@
             listDiv.innerHTML += `<div class="result-item"><span class="pos-title">${posNames[index] || 'ขยายความเพิ่มเติม'}:</span><span class="card-highlight">${id} ${CARD_DATA[id]}</span></div>`;
         });
         resArea.scrollIntoView({ behavior: 'smooth' });
-        document.getElementById('status-msg').innerText = "✅ เลือกไพ่เสร็จสมบูรณ์";
+        
+        // ถ้าไม่ได้ถูกแก้ไขข้อความจาก Auto Pick ไพ่พิเศษ ให้ขึ้นว่าสำเร็จ
+        if (!document.getElementById('status-msg').innerHTML.includes('ระบบพบไพ่พิเศษ')) {
+            document.getElementById('status-msg').innerText = "✅ เลือกไพ่เสร็จสมบูรณ์";
+        }
     }
 
     function copyResult() {

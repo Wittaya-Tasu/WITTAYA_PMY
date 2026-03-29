@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สรุปคำพยากรณ์: หมอวิทยา ธรรมนาย</title>
+    <title>สรุปคำพยากรณ์ : หมอวิทยา ธรรมนาย</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
@@ -21,6 +21,7 @@
         button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; transition: 0.3s; margin: 5px; }
         .btn-process { background: #2980b9; color: white; width: 100%; font-size: 18px; padding: 15px;}
         .btn-save-img { background: #27ae60; color: white; display: none; }
+        .btn-save-pdf { background: #95a5a6; color: white; display: none; }
         button:hover { opacity: 0.8; transform: translateY(-2px); }
 
         #capture-area { padding: 40px; background: white; border-radius: 15px; }
@@ -30,9 +31,12 @@
         .master-card { flex: 1; max-width: 80px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid #d4af37; background: #fff; }
         .master-card img { width: 100%; display: block; }
 
+        /* 🌟 ปรับปรุงกล่องคำถามและคำตอบ (สรุปดวง) */
         .question-summary-box { font-size: 1.1em; color: #2c3e50; background: #fff3cd; padding: 25px; border-radius: 15px; margin-bottom: 30px; border-left: 10px solid #e67e22; text-align: left; line-height: 1.7; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .q-title { font-size: 1.3em; font-weight: bold; color: #d35400; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(211, 84, 0, 0.2); padding-bottom: 5px;}
-        .summary-content { white-space: pre-wrap; margin-top: 10px; font-weight: 500; color: #2c3e50; }
+        
+        /* 🌟 เน้นตัวหนาสีดำสำหรับคำตอบ */
+        .summary-content { white-space: pre-wrap; margin-top: 10px; font-weight: 700; color: #000; font-size: 1.05em; }
 
         .custom-layout-3to6 { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; max-width: 800px; margin: 20px auto; }
         .card-item { background: #fff; border-radius: 8px; padding: 6px; border: 1px solid #eee; text-align: center; width: calc(16.66% - 15px); max-width: 90px;} 
@@ -60,8 +64,8 @@
         .small-card-container img { width: 100%; border-radius: 4px; display: block; }
         
         .prediction-content { flex: 1; white-space: pre-wrap; align-self: center; }
-        .extra-section { margin-top: 25px; padding: 20px; border-top: 2px dashed #bdc3c7; background: #f9f9f9; border-radius: 10px; }
-        .extra-title { font-weight: bold; color: #2980b9; margin-bottom: 10px; display: block; font-size: 1.2em; }
+        .extra-section { margin-top: 25px; padding: 20px; border-top: 2px dashed #bdc3c7; background: #f9f9f9; border-radius: 10px; white-space: pre-wrap; text-align: left; }
+        .extra-title { font-weight: bold; color: #2980b9; margin-bottom: 10px; display: block; font-size: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
 
         .footer-credit { font-size: 14px; color: #bdc3c7; margin-top: 30px; text-align: center; font-weight: bold;}
 
@@ -77,19 +81,19 @@
     <div class="no-print">
         <h2>📜 ใบสรุปคำพยากรณ์</h2>
         <div class="input-group">
-            <label class="input-label">1. วางผลการเลือกไพ่</label>
+            <label class="input-label">1.คำถาม และ ชื่อไพ่</label>
             <textarea id="input-cards" placeholder="วางผลการเลือกไพ่ที่นี่..."></textarea>
         </div>
         <div class="input-group">
-            <label class="input-label">2. วางคำพยากรณ์จาก AI</label>
+            <label class="input-label">2.คำพยากรณ์</label>
             <textarea id="input-prediction" placeholder="วางคำทำนายที่นี่..."></textarea>
         </div>
         <button class="btn-process" onclick="processReading()">✨ สร้างใบสรุปคำพยากรณ์</button>
     </div>
 
     <div class="btn-group no-print">
-        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 บันทึกรูปภาพ</button>
-        <button id="btnSavePdf" class="btn-save-img" style="background:#95a5a6;" onclick="window.print()">📑 บันทึก PDF</button>
+        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 SAVE IMAGE</button>
+        <button id="btnSavePdf" class="btn-save-pdf" onclick="window.print()">📑 SAVE PDF</button>
     </div>
 
     <div id="capture-area">
@@ -104,7 +108,7 @@
             <div id="card-area" class="custom-layout-3to6"></div>
 
             <div id="prediction-area" class="prediction-box">
-                <div class="prediction-title">✨ รายละเอียดคำทำนายรายใบ ✨</div>
+                <div class="prediction-title">✨ รายละเอียดคำทำนายของไพ่แต่ละใบ ✨</div>
                 <div id="prediction-list"></div>
                 <div id="extra-list" class="extra-section" style="display:none;"></div>
             </div>
@@ -138,10 +142,10 @@
         
         if (!inputCards.trim() || !inputPred.trim()) { alert("กรุณาใส่ข้อมูลให้ครบครับ"); return; }
 
-        // 🌟 ตัวกรองลบขยะข้อความ (ลบสัญลักษณ์อ้างอิง เช่น [1], [2], (1), (2), [^1^] ฯลฯ)
-        inputPred = inputPred.replace(/\[\^?\d+\^?\]/g, ""); // ลบ [1] หรือ [^1^]
-        inputPred = inputPred.replace(/\(\d+\)/g, "");     // ลบ (1)
-        inputPred = inputPred.replace(/\[source\]/gi, ""); // ลบ [source] (ถ้ามี)
+        // 🌟 ตัวกรองลบขยะข้อความ
+        inputPred = inputPred.replace(/\[\^?\d+\^?\]/g, ""); 
+        inputPred = inputPred.replace(/\(\d+\)/g, "");     
+        inputPred = inputPred.replace(/\[source\]/gi, ""); 
 
         document.getElementById('card-area').innerHTML = "";
         document.getElementById('master-cards-area').innerHTML = "";
@@ -170,9 +174,14 @@
 
         paragraphs.forEach(p => {
             const cleanP = p.trim();
-            if (cleanP.startsWith("สรุปคำพยากรณ์:")) summaryText = cleanP;
-            else if (cleanP.startsWith("ความหมายพิเศษ:")) extraText = cleanP;
-            else mainPredictions.push(cleanP);
+            // 🌟 ตรวจจับส่วนสรุป และเปลี่ยนหัวข้อเป็น "คำตอบ:"
+            if (cleanP.startsWith("สรุปคำพยากรณ์:")) {
+                summaryText = "คำตอบ: " + cleanP.replace('สรุปคำพยากรณ์:', '').trim();
+            } else if (cleanP.startsWith("ความหมายพิเศษ:")) {
+                extraText = cleanP;
+            } else {
+                mainPredictions.push(cleanP);
+            }
         });
 
         document.getElementById('display-summary').innerText = summaryText;
@@ -205,11 +214,14 @@
         });
 
         if (extraText) {
+            let cleanExtra = extraText.replace('ความหมายพิเศษ:', '').trim();
+            let formattedExtra = cleanExtra.replace(/(?!^)-\s*/g, '\n- ');
             document.getElementById('extra-list').style.display = "block";
-            document.getElementById('extra-list').innerHTML = `<span class="extra-title">⭐ ความหมายเพิ่มเติม</span>${extraText.replace('ความหมายพิเศษ:', '').trim()}`;
+            document.getElementById('extra-list').innerHTML = `<span class="extra-title">⭐ ความหมายเพิ่มเติม</span>${formattedExtra}`;
         }
 
         document.getElementById('btnSaveImg').style.display = 'inline-block';
+        document.getElementById('btnSavePdf').style.display = 'inline-block';
         resDisp.scrollIntoView({ behavior: 'smooth' });
     }
 

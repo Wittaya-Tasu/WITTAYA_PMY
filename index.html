@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หมอวิทยา ธรรมนาย-ระบบเลือกไพ่พรหมญาณ</title>
+    <title>หมอวิทยา ธรรมนาย : เลือกไพ่</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
 
@@ -121,14 +121,14 @@
     <div class="modal-box">
         <div style="font-family: 'Kanit', sans-serif; font-size: 1.8em; color: #f1c40f; margin-bottom: 20px;">"คำอธิษฐานก่อนเปิดไพ่"</div>
         <div class="prayer-text">
-            ข้าพเจ้า.....(ชื่อ นามสกุล)..... ขอถามไพ่พรหมญาณว่า<br>
+            ข้าพเจ้า..(ชื่อ นามสกุล)..ขอถามไพ่พรหมญาณว่า<br>
             ดวงชะตาของข้าพเจ้าจะเป็นเช่นไรบ้าง<br>
             หากมีเรื่องใด ที่ข้าพเจ้าควรรับรู้ และ ต้องระมัดระวัง<br>
             ขอให้ ครูบาอาจารย์ เทพ พรหม สิ่งศักดิ์สิทธิ์และเทวดาที่อยู่ในไพ่<br>
             โปรดเมตตาบอก มาให้ข้าพเจ้าได้รับรู้ รับทราบ<br>
             ขอให้ข้าพเจ้าได้คำตอบ ในสิ่งที่อยากรู้ ด้วยเทอญ
         </div>
-        <button class="btn-gold" onclick="acceptPrayer()">ข้าพเจ้าตั้งจิตอธิษฐานแล้ว</button>
+        <button class="btn-gold" onclick="acceptPrayer()">ข้าพเจ้าอธิษฐานแล้ว</button>
     </div>
 </div>
 
@@ -136,9 +136,9 @@
     <div class="modal-box special-box">
         <div class="special-title">✨ ไพ่พิเศษ!</div>
         <div class="special-text">
-            ท่านจั่วได้ "ไพ่พิเศษ" <br>
+            ท่านได้ "ไพ่พิเศษ" <br>
             ให้ท่านเลือกไพ่<br>
-            เพื่อ "ขยายความ" เพิ่มเติมอีก 1 ใบ
+            เพื่อ"ขยายความ"เพิ่มเติมอีก 1 ใบ
         </div>
         <button class="btn-gold" style="background: #d35400; color: white;" onclick="closeExtraPopup()">รับสิทธิ์เลือกไพ่เพิ่ม</button>
     </div>
@@ -146,17 +146,17 @@
 
 <div class="container">
     <h2>🔮 หมอวิทยา ธรรมนาย</h2>
-    <p class="sub-title">ระบบพยากรณ์ไพ่พรหมญาณออนไลน์</p>
+    <p class="sub-title">พรหมญาณพยากรณ์: ออนไลน์</p>
     
     <div id="main-controls">
-        <p><b>ขั้นตอนที่ 1:</b> เลือกรูปแบบการจั่วไพ่</p>
-        <button onclick="startFlow(3)">1. แบบ 3 ใบ (ถามตอบ)</button>
-        <button onclick="startFlow(12)">2. แบบ 12 ใบ (พื้นดวง)</button>
+        <p><b>ขั้นตอนที่ 1:</b> เลือกรูปแบบไพ่</p>
+        <button onclick="startFlow(3)">1. แบบ 3 ใบ(ถามตอบ)</button>
+        <button onclick="startFlow(12)">2. แบบ 12 ใบ(พื้นดวงชะตา)</button>
     </div>
 
     <div id="card-selection-area" style="display:none;">
         <div id="question-block" style="display:none;">
-            <p style="color: #e74c3c;"><b>⚠️ ต้องพิมพ์คำถามก่อนจึงจะเลือกไพ่ได้:</b></p>
+            <p style="color: #e74c3c;"><b>⚠️ ต้องพิมพ์คำถามก่อนจึงจะเลือกไพ่ได้ครับ:</b></p>
             <input type="text" id="user-question" placeholder="พิมพ์คำถามของท่านที่นี่...">
         </div>
         <div id="status-msg" style="margin-top:15px; font-weight: bold; color: #2980b9; font-size: 1.1em;"></div>

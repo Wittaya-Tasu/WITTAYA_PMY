@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สรุปคำพยากรณ์ - หมอวิทยา ธรรมนาย</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
+
+        body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; text-align: center; padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 1000px; margin: 20px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .no-print { margin-bottom: 20px; background: #ecf0f1; padding: 20px; border-radius: 15px; border: 1px solid #bdc3c7;}
+        h2 { color: #2c3e50; font-family: 'Kanit', sans-serif; font-size: 2.2em; margin-bottom: 15px; margin-top: 0;}
+        
+        /* สไตล์ช่องกรอกข้อมูล */
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-label { font-weight: bold; color: #d35400; margin-bottom: 5px; display: block; font-size: 1.1em; }
+        textarea { width: 95%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; resize: vertical; font-family: 'Sarabun', sans-serif;}
+        #input-cards { height: 80px; }
+        #input-prediction { height: 120px; }
+        
+        .btn-group { margin-top: 20px; }
+        button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; transition: 0.3s; margin: 5px; }
+        .btn-process { background: #2980b9; color: white; width: 100%; font-size: 18px; padding: 15px;}
+        .btn-save-img { background: #27ae60; color: white; display: none; }
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        #capture-area { padding: 40px; background: white; border-radius: 15px; }
+        #result-display { margin-top: 20px; display: none; }
+        
+        /* 🌟 ส่วนของไพ่ครู (Master Cards) */
+        .master-cards-layout {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;
+            padding-bottom: 25px; border-bottom: 2px dashed #bdc3c7;
+        }
+        .master-card {
+            flex: 1; max-width: 90px; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid #d4af37; background: #fff;
+        }
+        .master-card img { width: 100%; display: block; }
+
+        .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
+
+        /* การจัดวางไพ่แบบ 3-6 ใบ */
+        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 800px; margin: 0 auto; }
+        
+        .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; }
+        .card-item img { width: 100%; border-radius: 5px; display: block; }
+        .pos-label { display: block; font-weight: bold; font-size: 0.9em; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
+
+        /* สีสถานะไพ่ (ดึงมาจาก show.html เดิม) */
+        .card-very-good { background-color: #0047AB !important; border-color: #003380 !important; }
+        .card-very-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+        .card-good { background-color: #bbdefb !important; border-color: #90caf9 !important; }
+        .card-good .pos-label { color: #0d47a1 !important; border-bottom-color: rgba(13,71,161,0.2) !important; }
+        .card-neutral { background-color: #ffffff !important; border-color: #eeeeee !important; }
+        .card-neutral .pos-label { color: #000000 !important; border-bottom-color: #e0e0e0 !important; }
+        .card-bad { background-color: #212121 !important; border-color: #000000 !important; }
+        .card-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+        .card-very-bad { background-color: #b71c1c !important; border-color: #7f0000 !important; }
+        .card-very-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+        .card-gold-zone { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; border-color: #aa771c !important; box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4); }
+        .card-gold-zone .pos-label { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); border-bottom-color: rgba(255,255,255,0.4) !important; }
+
+        /* 📝 กล่องแสดงคำพยากรณ์ */
+        .prediction-box {
+            background: #fdfbf7; /* สีพื้นหลังนวลๆ ถนอมสายตา */
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 35px;
+            text-align: left;
+            font-size: 1.15em;
+            line-height: 1.8;
+            color: #2c3e50;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            white-space: pre-wrap; /* สำคัญมาก: ทำให้เว้นบรรทัดตามที่พิมพ์มาเป๊ะๆ */
+        }
+        .prediction-title {
+            color: #8e44ad;
+            font-family: 'Kanit', sans-serif;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            border-bottom: 2px dashed #d4af37;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .footer-credit { font-size: 14px; color: #bdc3c7; margin-top: 30px; text-align: center; font-weight: bold;}
+
+        @media print {
+            .no-print, .btn-group { display: none !important; }
+            .container { box-shadow: none; border: none; width: 100%; margin: 0; padding: 0; }
+            .custom-layout-3to6 { display: grid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .prediction-box, .question-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="no-print">
+        <h2>📜 สร้างใบสรุปคำพยากรณ์</h2>
+        
+        <div class="input-group">
+            <label class="input-label">1. วางผลการเลือกไพ่ (ที่มีคำถามและรายชื่อไพ่)</label>
+            <textarea id="input-cards" placeholder="วางผลการเลือกไพ่ที่นี่..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">2. วางคำพยากรณ์ (ที่ได้จาก AI หรือพิมพ์เอง)</label>
+            <textarea id="input-prediction" placeholder="วางคำทำนายที่นี่..."></textarea>
+        </div>
+
+        <button class="btn-process" onclick="processReading()">✨ สร้างใบสรุปคำพยากรณ์</button>
+    </div>
+
+    <div class="btn-group no-print" style="text-align: center;">
+        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 บันทึกเป็นรูปภาพ</button>
+        <button id="btnSavePdf" class="btn-save-img" style="background:#95a5a6;" onclick="window.print()">📑 บันทึกเป็น PDF</button>
+    </div>
+
+    <div id="capture-area">
+        <div id="result-display">
+            <div id="master-cards-area" class="master-cards-layout"></div>
+            
+            <div id="display-question" class="question-box"></div>
+            
+            <div id="card-area" class="custom-layout-3to6"></div>
+
+            <div id="prediction-area" class="prediction-box">
+                <div class="prediction-title">✨ คำพยากรณ์ ✨</div>
+                <div id="prediction-text"></div>
+            </div>
+
+            <div class="footer-credit">พรหมญาณพยากรณ์ โดย หมอวิทยา ธรรมนาย</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const IMAGE_PATH = 'images/'; 
+    const IMAGE_EXT = '.jpg'; 
+    
+    // --- ฐานข้อมูลกลุ่มไพ่ 5 สถานะ ---
+    const VERY_GOOD = ["101", "409", "411", "424"];
+    const GOOD = ["104", "105", "106", "201", "202", "203", "204", "206", "207", "301", "304", "307", "312", "402", "404", "405", "406", "410", "414", "415", "416", "417", "418", "419", "421", "422", "426", "429"];
+    const NEUTRAL = ["102", "209", "210", "211", "303", "305", "309", "311", "403", "407", "420", "435", "436"];
+    const BAD = ["103", "107", "205", "208", "212", "302", "306", "308", "310", "413", "423", "425", "427", "428", "430", "432", "433", "434"];
+    const VERY_BAD = ["401", "408", "412", "431"];
+
+    function processReading() {
+        const inputCards = document.getElementById('input-cards').value;
+        const inputPrediction = document.getElementById('input-prediction').value;
+        const resultDisplay = document.getElementById('result-display');
+        const displayQuestion = document.getElementById('display-question');
+        const cardArea = document.getElementById('card-area');
+        const masterArea = document.getElementById('master-cards-area');
+        const predictionText = document.getElementById('prediction-text');
+        const btnSaveImg = document.getElementById('btnSaveImg');
+        const btnSavePdf = document.getElementById('btnSavePdf');
+
+        if (!inputCards.trim() || !inputPrediction.trim()) { 
+            alert("⚠️ กรุณาวางข้อมูลให้ครบทั้ง 2 ช่องนะครับ (รายชื่อไพ่ และ คำพยากรณ์)"); 
+            return; 
+        }
+
+        cardArea.innerHTML = ""; 
+        masterArea.innerHTML = ""; 
+        resultDisplay.style.display = 'block';
+        btnSaveImg.style.display = 'inline-block';
+        btnSavePdf.style.display = 'inline-block';
+
+        // 🌟 สร้างไพ่ครู (501 - 506)
+        for (let i = 501; i <= 506; i++) {
+            masterArea.innerHTML += `<div class="master-card"><img src="${IMAGE_PATH}${i}${IMAGE_EXT}" crossorigin="anonymous"></div>`;
+        }
+
+        // ประมวลผลข้อความไพ่
+        const lines = inputCards.split('\n');
+        let question = "ดูดวงถาม-ตอบ";
+        const cardLines = [];
+
+        lines.forEach(line => {
+            if (line.includes('❓ คำถาม:')) question = line.replace('❓ คำถาม:', '').trim();
+            if (/^\d+\./.test(line) && line.includes(':')) cardLines.push(line);
+        });
+
+        displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
+
+        // วาดไพ่ที่เลือก
+        cardLines.forEach((line) => {
+            const parts = line.split(':');
+            const posPart = parts[0].replace(/^\d+\.\s*/, '').trim(); 
+            const cardPart = parts[1].trim(); 
+            const cardId = cardPart.substring(0, 3); 
+
+            let cardClass = "card-item";
+            let labelClass = "pos-label";
+
+            if (VERY_BAD.includes(cardId)) cardClass += " card-very-bad";
+            else if (BAD.includes(cardId)) cardClass += " card-bad";
+            else if (VERY_GOOD.includes(cardId)) cardClass += " card-very-good";
+            else if (GOOD.includes(cardId)) cardClass += " card-good";
+            else cardClass += " card-neutral"; 
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = cardClass;
+            cardDiv.innerHTML = `<span class="${labelClass}">${posPart}</span><img src="${IMAGE_PATH}${cardId}${IMAGE_EXT}" crossorigin="anonymous">`;
+            cardArea.appendChild(cardDiv);
+        });
+
+        // 📝 ใส่คำพยากรณ์ลงไป
+        // ไม่ต้องใช้ .replace('\n', '<br>') เพราะเราใช้ CSS: white-space: pre-wrap; จัดการให้แล้ว
+        predictionText.innerText = inputPrediction;
+
+        // เลื่อนหน้าจอลงมาดูผลลัพธ์
+        resultDisplay.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function saveAsImage() {
+        const captureArea = document.getElementById('capture-area');
+        window.scrollTo(0,0);
+        html2canvas(captureArea, { useCORS: true, scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'ใบสรุปคำพยากรณ์-หมอวิทยา.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>

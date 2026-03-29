@@ -74,6 +74,12 @@
             z-index: 1; 
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
             pointer-events: none; 
+            transition: opacity 0.3s ease;
+        }
+
+        /* คลาสสำหรับซ่อนตัวเลข */
+        .hide-numbers .card-bg-number {
+            display: none !important;
         }
         
         .card-index { position: absolute; top: 4px; left: 5px; font-size: 10px; color: rgba(255,255,255,0.4); display: none;} 
@@ -89,7 +95,7 @@
         }
         
         .card.selected .card-bg-number {
-            display: none; 
+            display: none !important; 
         }
 
         button { padding: 12px 25px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 10px; margin: 8px; font-size: 16px; font-weight: bold; transition: 0.3s; }
@@ -108,6 +114,15 @@
         
         .btn-copy { background: #2980b9; width: 100%; font-size: 1.1em; padding: 18px; margin-top: 15px; }
         .btn-home { background: #95a5a6; width: 100%; margin-top: 10px; }
+
+        /* จัดกลุ่มปุ่มให้สวยงาม */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
         
         @media (max-width: 768px) {
             .grid-container { grid-template-columns: repeat(5, 1fr); padding: 10px; gap: 8px;}
@@ -161,7 +176,8 @@
         </div>
         <div id="status-msg" style="margin-top:15px; font-weight: bold; color: #2980b9; font-size: 1.1em;"></div>
         
-        <div style="margin-top: 10px;">
+        <div class="action-buttons">
+            <button onclick="toggleNumbers()" id="btn-toggle-num" style="background:#e67e22; font-size: 14px; padding: 8px 15px;">👁️ ปิดตัวเลขไพ่</button>
             <button onclick="shuffleAndReset()" id="btn-shuffle" style="background:#34495e; font-size: 14px; padding: 8px 15px;">🔄 สลับตำแหน่งไพ่ใหม่</button>
             <button onclick="autoPickCards()" id="btn-auto" style="background:#8e44ad; font-size: 14px; padding: 8px 15px;">🤖 ให้ระบบสุ่มเลือกไพ่ (Auto)</button>
         </div>
@@ -192,6 +208,7 @@
 
     let currentMode = 0; let selectedCards = []; let maxAllowed = 0;
     let deck = Object.keys(CARD_DATA).map(Number);
+    let isNumbersVisible = true; // ตัวแปรเก็บสถานะการเปิด/ปิดตัวเลข
 
     function startFlow(mode) { currentMode = mode; maxAllowed = mode; document.getElementById('prayer-overlay').style.display = 'flex'; }
 
@@ -213,6 +230,23 @@
         document.getElementById('result-area').style.display = 'none';
     }
 
+    // 🌟 ฟังก์ชันเปิด/ปิด ตัวเลขไพ่ 🌟
+    function toggleNumbers() {
+        isNumbersVisible = !isNumbersVisible;
+        const board = document.getElementById('card-board');
+        const btnToggle = document.getElementById('btn-toggle-num');
+
+        if (isNumbersVisible) {
+            board.classList.remove('hide-numbers');
+            btnToggle.innerHTML = "👁️ ปิดตัวเลขไพ่";
+            btnToggle.style.background = "#e67e22"; // สีส้ม
+        } else {
+            board.classList.add('hide-numbers');
+            btnToggle.innerHTML = "👁️ เปิดตัวเลขไพ่";
+            btnToggle.style.background = "#27ae60"; // สีเขียว
+        }
+    }
+
     function shuffleAndReset() {
         selectedCards = []; maxAllowed = currentMode;
         document.getElementById('result-area').style.display = 'none';
@@ -221,10 +255,16 @@
 
     function renderBoard() {
         const board = document.getElementById('card-board'); board.innerHTML = "";
+        
+        // เช็คว่าถ้าถูกตั้งค่าให้ซ่อนอยู่ ให้ใส่คลาส hide-numbers เข้าไปในกระดาน
+        if (!isNumbersVisible) {
+            board.classList.add('hide-numbers');
+        }
+
         deck.forEach((cardId, index) => {
             const cardDiv = document.createElement('div'); 
             cardDiv.className = 'card';
-            cardDiv.id = `client-card-${cardId}`; // เพิ่ม ID ไว้เพื่อให้อ้างอิงตอน Auto Pick ได้
+            cardDiv.id = `client-card-${cardId}`; 
             cardDiv.innerHTML = `<span class="card-bg-number">${index + 1}</span>`;
             cardDiv.onclick = () => selectCard(cardId, cardDiv); 
             board.appendChild(cardDiv);
@@ -241,7 +281,6 @@
             element.classList.add('selected');
             element.innerHTML = `${selectedCards.length}`;
             
-            // ตรรกะไพ่พิเศษ 3 ใบแรกของแบบ 3 ใบ
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length < 6 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
                 document.getElementById('extra-card-popup').style.display = 'flex';
@@ -252,39 +291,32 @@
         }
     }
 
-    // 🌟 ฟังก์ชันใหม่: ให้ระบบสุ่มไพ่อัตโนมัติ 🌟
     function autoPickCards() {
         if (currentMode === 3 && document.getElementById('user-question').value.trim() === "") {
             alert("กรุณาพิมพ์คำถามก่อนครับ"); 
             return;
         }
 
-        // หาไพ่ที่ยังไม่ถูกเลือกในกอง
         let unpickedCards = deck.filter(id => !selectedCards.includes(id));
-        unpickedCards.sort(() => Math.random() - 0.5); // สับไพ่ที่เหลืออีกรอบ
+        unpickedCards.sort(() => Math.random() - 0.5); 
 
-        // วนลูปเลือกไพ่จนกว่าจะครบตามโควต้า (maxAllowed อาจเพิ่มขึ้นถ้าระบบจับได้ไพ่พิเศษ)
         while (selectedCards.length < maxAllowed) {
             let cardId = unpickedCards.pop();
             selectedCards.push(cardId);
             
-            // อัปเดตหน้าตาไพ่บนกระดานให้เปลี่ยนเป็นสีส้ม/ทอง
             let cardDiv = document.getElementById(`client-card-${cardId}`);
             if(cardDiv) {
                 cardDiv.classList.add('selected');
                 cardDiv.innerHTML = `${selectedCards.length}`;
             }
 
-            // ตรรกะไพ่พิเศษสำหรับโหมด 3 ใบ (จั่วเพิ่มแบบเงียบๆ ไม่ต้องโชว์ Popup เพื่อความต่อเนื่อง)
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length < 6 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
             }
         }
         
-        // เมื่อเสร็จแล้ว โชว์ผลลัพธ์
         showResults();
 
-        // แจ้งเตือนเล็กน้อยถ้าระบบช่วยจั่วไพ่พิเศษให้
         if (currentMode === 3 && maxAllowed > 3) {
             document.getElementById('status-msg').innerHTML = `✨ <b>ระบบพบไพ่พิเศษ!</b> จึงจั่วเพิ่มให้อัตโนมัติ (รวม ${maxAllowed} ใบ)`;
         }
@@ -300,7 +332,6 @@
         });
         resArea.scrollIntoView({ behavior: 'smooth' });
         
-        // ถ้าไม่ได้ถูกแก้ไขข้อความจาก Auto Pick ไพ่พิเศษ ให้ขึ้นว่าสำเร็จ
         if (!document.getElementById('status-msg').innerHTML.includes('ระบบพบไพ่พิเศษ')) {
             document.getElementById('status-msg').innerText = "✅ เลือกไพ่เสร็จสมบูรณ์";
         }

@@ -153,7 +153,7 @@
         <div class="special-text">
             ท่านได้ "ไพ่พิเศษ" <br>
             ให้ท่านเลือกไพ่<br>
-            เพื่อ"ขยายความ"เพิ่มเติมอีก 1 ใบ
+            เพื่อ"ขยายความ"อีก 1 ใบ
         </div>
         <button class="btn-gold" style="background: #d35400; color: white;" onclick="closeExtraPopup()">รับสิทธิ์เลือกไพ่เพิ่ม</button>
     </div>
@@ -203,8 +203,8 @@
     };
 
     const EXTRA_CARD_IDS = [201, 208, 211];
-    const POS_3 = ["ไพ่สำคัญของคำถาม", "สถานการณ์/ความรู้สึก", "คำแนะนำ/สิ่งที่ควรทำ", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม", "ขยายความเพิ่มเติม"];
-    const POS_12 = ["พื้นดวงชะตา", "ทรัพย์สิน", "บ้านช่อง/สมบัติ", "ญาติพี่น้อง", "ลูกน้อง/บริวาร", "ศัตรู/อุปสรรค", "คู่ครอง/คนรัก", "โรค/ภัยพิบัติ", "ความสุขสมหวัง", "การงาน/อาชีพ", "โชค/ยศศักดิ์", "สรุปดวงชะตา"];
+    const POS_3 = ["ไพ่สำคัญ", "ความรู้สึก", "คำแนะนำ", "ขยายความ", "ขยายความ", "ขยายความ"];
+    const POS_12 = ["พื้นดวงชะตา", "ทรัพย์สิน", "บ้านช่อง", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "ลาภยศ", "สรุป"];
 
     let currentMode = 0; let selectedCards = []; let maxAllowed = 0;
     let deck = Object.keys(CARD_DATA).map(Number);
@@ -238,11 +238,11 @@
 
         if (isNumbersVisible) {
             board.classList.remove('hide-numbers');
-            btnToggle.innerHTML = "👁️ ปิดตัวเลขไพ่";
+            btnToggle.innerHTML = "👁️ ปิดตำแหน่งไพ่";
             btnToggle.style.background = "#e67e22"; // สีส้ม
         } else {
             board.classList.add('hide-numbers');
-            btnToggle.innerHTML = "👁️ เปิดตัวเลขไพ่";
+            btnToggle.innerHTML = "👁️ เปิดตำแหน่งไพ่";
             btnToggle.style.background = "#27ae60"; // สีเขียว
         }
     }
@@ -284,7 +284,7 @@
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length < 6 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
                 document.getElementById('extra-card-popup').style.display = 'flex';
-                document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์จั่วเพิ่ม (ใบที่ ${selectedCards.length+1})`;
+                document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์เลือกไพ่เพิ่ม (ใบที่ ${selectedCards.length+1})`;
                 return;
             }
             if (selectedCards.length === maxAllowed) showResults();
@@ -328,7 +328,7 @@
         resArea.style.display = 'block'; listDiv.innerHTML = "";
         const posNames = (currentMode === 3) ? POS_3 : POS_12;
         selectedCards.forEach((id, index) => {
-            listDiv.innerHTML += `<div class="result-item"><span class="pos-title">${posNames[index] || 'ขยายความเพิ่มเติม'}:</span><span class="card-highlight">${id} ${CARD_DATA[id]}</span></div>`;
+            listDiv.innerHTML += `<div class="result-item"><span class="pos-title">${posNames[index] || 'ขยายความ'}:</span><span class="card-highlight">${id} ${CARD_DATA[id]}</span></div>`;
         });
         resArea.scrollIntoView({ behavior: 'smooth' });
         
@@ -341,7 +341,7 @@
         const question = (currentMode === 3) ? document.getElementById('user-question').value : "วิเคราะห์พื้นดวงชะตา";
         const posNames = (currentMode === 3) ? POS_3 : POS_12;
         let textToCopy = `🔮 ผลการเลือกไพ่พรหมญาณ\n🔮 รูปแบบ : แบบ ${currentMode} ใบ\n--------------------------\n❓ คำถาม: ${question}\n--------------------------\n`;
-        selectedCards.forEach((id, index) => { textToCopy += `${index + 1}. ${posNames[index] || 'ขยายความเพิ่มเติม'}: ${id} ${CARD_DATA[id]}\n`; });
+        selectedCards.forEach((id, index) => { textToCopy += `${index + 1}. ${posNames[index] || 'ขยายความ'}: ${id} ${CARD_DATA[id]}\n`; });
         navigator.clipboard.writeText(textToCopy).then(() => { 
             document.getElementById('copy-status').innerText = "✅ คัดลอกข้อความสำเร็จ!"; 
             setTimeout(() => { document.getElementById('copy-status').innerText = ""; }, 3000);

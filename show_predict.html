@@ -43,14 +43,14 @@
 
         .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
 
-        /* 🌟 ปรับขนาดรูปไพ่ที่เลือกด้านบน ลดขนาดลง 50% และเตรียมพื้นที่ 6 ใบ */
+        /* การจัดวางไพ่แบบ 3-6 ใบ */
         .custom-layout-3to6 { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; max-width: 800px; margin: 0 auto; }
         
-        .card-item { background: #fff; border-radius: 8px; padding: 6px; border: 1px solid #eee; text-align: center; width: calc(16.66% - 15px); max-width: 90px;} /* เตรียมพื้นที่สูงสุด 6 ใบในแถวเดียว */
+        .card-item { background: #fff; border-radius: 8px; padding: 6px; border: 1px solid #eee; text-align: center; width: calc(16.66% - 15px); max-width: 90px;} 
         .card-item img { width: 100%; border-radius: 4px; display: block; }
         .pos-label { display: block; font-weight: bold; font-size: 0.8em; margin-bottom: 5px; border-bottom: 1px solid #f0f0f0; padding-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 
-        /* สีสถานะไพ่ (ดึงมาจาก show.html เดิม) */
+        /* สีสถานะไพ่ */
         .card-very-good { background-color: #0047AB !important; border-color: #003380 !important; }
         .card-very-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
         .card-good { background-color: #bbdefb !important; border-color: #90caf9 !important; }
@@ -64,7 +64,7 @@
         .card-gold-zone { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; border-color: #aa771c !important; box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4); }
         .card-gold-zone .pos-label { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); border-bottom-color: rgba(255,255,255,0.4) !important; }
 
-        /* 📝 🌟 ปรับปรุงกล่องคำพยากรณ์: เพิ่มรูปไพ่เล็กหน้าคำพยากรณ์แต่ละใบ */
+        /* 📝 กล่องคำพยากรณ์ */
         .prediction-box {
             background: #fdfbf7; 
             border: 2px solid #d4af37;
@@ -87,7 +87,7 @@
             text-align: center;
         }
 
-        /* 🌟 Layout สำหรับรูปไพ่และคำพยากรณ์ของไพ่แต่ละใบ */
+        /* สำหรับคำพยากรณ์ที่มีไพ่ประกอบ */
         .prediction-item {
             display: flex;
             align-items: flex-start;
@@ -96,22 +96,25 @@
             padding-bottom: 15px;
             border-bottom: 1px solid #f0f0f0;
         }
-        .prediction-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         
-        /* 🌟 รูปไพ่ขนาดเล็ก */
-        .small-card-icon {
-            width: 45px; /* ขนาดกะทัดรัด */
-            height: auto;
-            border-radius: 4px;
-            border: 1px solid #d4af37;
-            flex-shrink: 0; /* ป้องกันรูปหด */
-            margin-top: 3px;
+        /* 🌟 สำหรับส่วนเสริม เช่น สรุปคำพยากรณ์ หรือ ความหมายพิเศษ (ไม่มีไพ่) */
+        .prediction-extra-item {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #bdc3c7;
+        }
+
+        .prediction-item:last-child, .prediction-extra-item:last-child { 
+            border-bottom: none; margin-bottom: 0; padding-bottom: 0; 
         }
         
-        /* 🌟 ส่วนข้อความคำพยากรณ์ */
+        .small-card-icon {
+            width: 45px; height: auto; border-radius: 4px; border: 1px solid #d4af37;
+            flex-shrink: 0; margin-top: 3px;
+        }
+        
         .prediction-content {
-            flex: 1;
-            white-space: pre-wrap; /* สำคัญมาก: ทำให้เว้นบรรทัดตามที่พิมพ์มาเป๊ะๆ */
+            flex: 1; white-space: pre-wrap; 
         }
 
         .footer-credit { font-size: 14px; color: #bdc3c7; margin-top: 30px; text-align: center; font-weight: bold;}
@@ -120,7 +123,7 @@
             .no-print, .btn-group { display: none !important; }
             .container { box-shadow: none; border: none; width: 100%; margin: 0; padding: 0; }
             .custom-layout-3to6, .prediction-box, .question-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .prediction-item { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .prediction-item, .prediction-extra-item { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -195,7 +198,7 @@
 
         cardArea.innerHTML = ""; 
         masterArea.innerHTML = ""; 
-        predictionList.innerHTML = ""; // ล้างคำพยากรณ์เก่าออกก่อน
+        predictionList.innerHTML = ""; 
         resultDisplay.style.display = 'block';
         btnSaveImg.style.display = 'inline-block';
         btnSavePdf.style.display = 'inline-block';
@@ -217,7 +220,7 @@
 
         displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
 
-        // 🌟 วาดไพ่ที่เลือกด้านบน (ขนาดลดลง 50%)
+        // วาดไพ่ที่เลือก
         cardLines.forEach((line) => {
             const parts = line.split(':');
             const posPart = parts[0].replace(/^\d+\.\s*/, '').trim(); 
@@ -239,24 +242,32 @@
             cardArea.appendChild(cardDiv);
         });
 
-        // 🌟 📝 ประมวลผลคำพยากรณ์: แยกเป็นคำพยากรณ์ของไพ่แต่ละใบ และจับคู่กับรูปไพ่
-        const predictionParagraphs = inputPrediction.trim().split(/\n\s*\n/); // แยกตามบรรทัดว่าง
+        // 📝 ประมวลผลคำพยากรณ์ (แยกย่อหน้าตามช่องว่าง)
+        const predictionParagraphs = inputPrediction.trim().split(/\n\s*\n/);
 
         predictionParagraphs.forEach((paragraph, index) => {
-            if (index < cardLines.length) { // ตรวจสอบให้แน่ใจว่าไม่เกินจำนวนไพ่ที่เลือก
+            // ถ้าเป็นคำทำนายหลักที่ตรงกับจำนวนไพ่
+            if (index < cardLines.length) { 
                 const parts = cardLines[index].split(':');
                 const cardPart = parts[1].trim(); 
-                const cardId = cardPart.substring(0, 3); // ดึงรหัสไพ่เพื่อไปจับคู่รูปภาพ
+                const cardId = cardPart.substring(0, 3); 
                 
                 const predictionItemDiv = document.createElement('div');
                 predictionItemDiv.className = 'prediction-item';
-                
-                // 🌟 ใส่รูปไพ่เล็กหน้าคำพยากรณ์ของไพ่แต่ละใบ
                 predictionItemDiv.innerHTML = `
                     <img src="${IMAGE_PATH}${cardId}${IMAGE_EXT}" class="small-card-icon" crossorigin="anonymous">
                     <div class="prediction-content">${paragraph.trim()}</div>
                 `;
                 predictionList.appendChild(predictionItemDiv);
+            } 
+            // ถ้าเป็นส่วนเกินจากไพ่ (เช่น สรุปผล, ความหมายพิเศษ)
+            else {
+                const extraItemDiv = document.createElement('div');
+                extraItemDiv.className = 'prediction-extra-item';
+                extraItemDiv.innerHTML = `
+                    <div class="prediction-content">${paragraph.trim()}</div>
+                `;
+                predictionList.appendChild(extraItemDiv);
             }
         });
 

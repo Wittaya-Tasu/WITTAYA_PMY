@@ -263,7 +263,7 @@
 
         // 🌟 แก้ไขโค้ดส่วนนี้ที่ทำระบบพังในเวอร์ชันก่อนครับ
        if (extraText) {
-            let cleanExtra = extraText.replace('ความหมายพิเศษ:', '').replace('ความหมายเพิ่มเติม:', '').trim();
+            let cleanExtra = extraText.replace('ความหมายพิเศษ:', '').replace('ความหมายพิเศษ:', '').trim();
             
             // 1. จัดการระยะห่าง "ระหว่างหัวข้อไพ่" (ให้มีช่องว่าง 1 บรรทัดคั่นข้อ)
             let formattedExtra = cleanExtra.replace(/(?!^)\n*([-*])/g, '\n\n$1'); 

@@ -30,7 +30,7 @@
         /* ข้อความลิขสิทธิ์ด้านบนสุด */
         .copyright-header { font-size: 14px; color: #95a5a6; margin-bottom: 15px; font-weight: bold; }
 
-        /* ลายน้ำ Watermark */
+        /* 🌟 ปรับปรุงลายน้ำ Watermark ให้ชัดขึ้น */
         .watermark-overlay {
             position: absolute;
             top: 50%; left: 50%;
@@ -39,7 +39,7 @@
             font-family: 'Kanit', sans-serif;
             font-size: 24px;
             font-weight: bold;
-            color: rgba(0, 0, 0, 0.06); 
+            color: rgba(0, 0, 0, 0.15); /* 🌟 ปรับเพิ่มความเข้มเป็น 15% (จากเดิม 6%) */
             white-space: nowrap;
             pointer-events: none;
             z-index: 10;
@@ -171,9 +171,8 @@
         
         if (!inputCards.trim() || !inputPred.trim()) { alert("กรุณาใส่ข้อมูลให้ครบครับ"); return; }
 
-        // 🌟 กรองขยะทั้งหมดแบบถอนรากถอนโคน
         inputPred = inputPred.replace(/\[cite_start\]/gi, "");
-        inputPred = inputPred.replace(/\]*\]/gi, "");
+        inputPred = inputPred.replace(/\/gi, "");
         inputPred = inputPred.replace(/\[\^?\d+\^?\]/g, ""); 
         inputPred = inputPred.replace(/\(\d+\)/g, "");     
         inputPred = inputPred.replace(/\[source\]/gi, ""); 
@@ -198,46 +197,24 @@
         });
         document.getElementById('display-q').innerHTML = `❓ คำถาม: ${question}`;
 
-        // 🌟 รื้อระบบแยกข้อความใหม่ให้ฉลาดขึ้น ไม่พึ่งพาการเคาะบรรทัด
-        let summaryText = "";
+        const paragraphs = inputPred.trim().split(/\n\s*\n/);
+        let summaryHtml = ""; 
         let extraText = "";
-        
-        // ดึง "ความหมายพิเศษ"
-        const extraRegex = /(?:ความหมายพิเศษ:|ความหมายเพิ่มเติม:)\s*([\s\S]*)$/;
-        let extraMatch = inputPred.match(extraRegex);
-        if (extraMatch) {
-            extraText = extraMatch[1].trim();
-            inputPred = inputPred.replace(extraRegex, ''); // เอาส่วนนี้ออก
-        }
+        let mainPredictions = [];
 
-        // ดึง "สรุปคำพยากรณ์"
-        const summaryRegex = /สรุปคำพยากรณ์:\s*([\s\S]*)$/;
-        let summaryMatch = inputPred.match(summaryRegex);
-        if (summaryMatch) {
-            summaryText = summaryMatch[1].trim();
-            inputPred = inputPred.replace(summaryRegex, '');
-        }
-
-        // ข้อความที่เหลือคือคำทำนายรายใบ ตัดแบ่งตามหัวข้อหลักๆ ของ AI
-        let chunks = inputPred.split(/(?:ภาพรวมหลัก:|ความรู้สึก\/ปัจจัยที่ส่งผล:|บทสรุปและคำแนะนำ:|ขยายความเพิ่มเติม:)/g);
-        let mainPredictions = chunks.filter(c => c.trim().length > 0).map(c => c.trim());
-        
-        // กรณี AI ไม่ได้ส่งหัวข้อมาให้ แต่ส่งมาเป็นย่อหน้า
-        if (mainPredictions.length < cardLines.length) {
-            let fallback = inputPred.split(/\n\s*\n/).filter(c => c.trim().length > 0);
-            if (fallback.length >= cardLines.length) mainPredictions = fallback;
-            else {
-                let fallback2 = inputPred.split('\n').filter(c => c.trim().length > 0);
-                if (fallback2.length >= cardLines.length) mainPredictions = fallback2;
+        paragraphs.forEach(p => {
+            const cleanP = p.trim();
+            if (cleanP.startsWith("สรุปคำพยากรณ์:")) {
+                let detail = cleanP.replace('สรุปคำพยากรณ์:', '').trim();
+                summaryHtml = `<b style="color:#000;">คำตอบ:</b> ${detail}`;
+            } else if (cleanP.startsWith("ความหมายพิเศษ:")) {
+                extraText = cleanP;
+            } else {
+                mainPredictions.push(cleanP);
             }
-        }
+        });
 
-        // แสดงผลสรุปด้านบน
-        if (summaryText) {
-            document.getElementById('display-summary').innerHTML = `<b style="color:#000; font-size:1.15em;">คำตอบ:</b> ${summaryText}`;
-        } else {
-            document.getElementById('display-summary').innerHTML = "";
-        }
+        document.getElementById('display-summary').innerHTML = summaryHtml;
 
         cardLines.forEach((line) => {
             const parts = line.split(':');
@@ -266,10 +243,9 @@
             }
         });
 
-        // 🌟 ปรับปรุงการขึ้นบรรทัดใหม่ของความหมายเพิ่มเติม
         if (extraText) {
-            // ตัดบรรทัดเมื่อเจอ - หรือ * let formattedExtra = extraText.replace(/\n?([-*])\s+/g, '\n$1 ').trim();
-            // ตัดขึ้นบรรทัดใหม่เมื่อเจอเครื่องหมายโคลอน (:)
+            let cleanExtra = extraText.replace('ความหมายพิเศษ:', '').trim();
+            let formattedExtra = cleanExtra.replace(/(?!^)([-*])\s+/g, '\n$1 ');
             formattedExtra = formattedExtra.replace(/:\s+/g, ':\n');
             
             document.getElementById('extra-list').style.display = "block";

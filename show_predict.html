@@ -27,8 +27,8 @@
         #capture-area { padding: 40px; background: white; border-radius: 15px; position: relative; }
         #result-display { margin-top: 10px; display: none; }
         
-        /* ข้อความลิขสิทธิ์บนสุด */
-        .copyright-header { font-size: 13px; color: #95a5a6; margin-bottom: 15px; font-weight: bold; letter-spacing: 0.5px; }
+        /* ข้อความลิขสิทธิ์ด้านบนสุด */
+        .copyright-header { font-size: 14px; color: #95a5a6; margin-bottom: 15px; font-weight: bold; }
 
         /* ลายน้ำ Watermark */
         .watermark-overlay {
@@ -39,7 +39,7 @@
             font-family: 'Kanit', sans-serif;
             font-size: 24px;
             font-weight: bold;
-            color: rgba(0, 0, 0, 0.05); /* จางๆ */
+            color: rgba(0, 0, 0, 0.06); 
             white-space: nowrap;
             pointer-events: none;
             z-index: 10;
@@ -54,6 +54,7 @@
 
         .question-summary-box { font-size: 1.1em; color: #2c3e50; background: #fff3cd; padding: 25px; border-radius: 15px; margin-bottom: 30px; border-left: 10px solid #e67e22; text-align: left; line-height: 1.7; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .q-title { font-size: 1.3em; font-weight: bold; color: #d35400; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(211, 84, 0, 0.2); padding-bottom: 5px;}
+        
         .summary-content { white-space: pre-wrap; margin-top: 10px; font-weight: 400; color: #333; font-size: 1.05em; }
 
         .custom-layout-3to6 { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; max-width: 800px; margin: 20px auto; position: relative; z-index: 1; }
@@ -82,15 +83,8 @@
         .small-card-container img { width: 100%; border-radius: 4px; display: block; }
         
         .prediction-content { flex: 1; white-space: pre-wrap; align-self: center; }
-
-        /* ส่วนความหมายเพิ่มเติม */
-        .extra-section { 
-            margin-top: 25px; padding: 20px; border-top: 2px dashed #bdc3c7; 
-            background: #f9f9f9; border-radius: 10px; 
-            white-space: pre-wrap; text-align: left;
-            line-height: 1.8;
-        }
-        .extra-title { font-weight: bold; color: #2980b9; margin-bottom: 12px; display: block; font-size: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .extra-section { margin-top: 25px; padding: 20px; border-top: 2px dashed #bdc3c7; background: #f9f9f9; border-radius: 10px; white-space: pre-wrap; text-align: left; line-height: 1.8; }
+        .extra-title { font-weight: bold; color: #2980b9; margin-bottom: 10px; display: block; font-size: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
 
         .footer-credit { font-size: 14px; color: #bdc3c7; margin-top: 30px; text-align: center; font-weight: bold;}
 
@@ -177,7 +171,6 @@
         
         if (!inputCards.trim() || !inputPred.trim()) { alert("กรุณาใส่ข้อมูลให้ครบครับ"); return; }
 
-        // 🌟 ลบขยะข้อความอ้างอิงจาก AI ทุกรูปแบบ
         inputPred = inputPred.replace(/\[cite_start\]/gi, "");
         inputPred = inputPred.replace(/\/gi, "");
         inputPred = inputPred.replace(/\[\^?\d+\^?\]/g, ""); 
@@ -223,7 +216,6 @@
 
         document.getElementById('display-summary').innerHTML = summaryHtml;
 
-        // วาดไพ่ชุดหลัก
         cardLines.forEach((line) => {
             const parts = line.split(':');
             const posPart = parts[0].replace(/^\d+\.\s*/, '').trim(); 
@@ -235,7 +227,6 @@
             document.getElementById('card-area').appendChild(div);
         });
 
-        // รายละเอียดรายใบ
         mainPredictions.forEach((text, idx) => {
             if (idx < cardLines.length) {
                 const cardId = cardLines[idx].split(':')[1].trim().substring(0, 3);
@@ -252,16 +243,13 @@
             }
         });
 
-        // 🌟 จัดการ Bullet Point และ ขึ้นบรรทัดใหม่หลังเครื่องหมาย ":" ในส่วนความหมายเพิ่มเติม
         if (extraText) {
             let cleanExtra = extraText.replace('ความหมายพิเศษ:', '').trim();
+            // 🌟 รองรับ Bullet ทั้งเครื่องหมาย - และ *
+            let formattedExtra = cleanExtra.replace(/(?!^)([-*])\s+/g, '\n$1 ');
+            // 🌟 ตัดขึ้นบรรทัดใหม่หลังเครื่องหมาย (:) ที่เว้นวรรค
+            formattedExtra = formattedExtra.replace(/:\s+/g, ':\n');
             
-            // 1. จัดการแยกข้อด้วยเครื่องหมาย - หรือ * ให้ขึ้นบรรทัดใหม่
-            let formattedExtra = cleanExtra.replace(/(?!^)\s*[\*\-]\s*/g, '\n- ');
-            
-            // 2. 🌟 ค้นหา ":" แล้วสั่งขึ้นบรรทัดใหม่เพื่อให้คำอธิบายอยู่คนละบรรทัดกับชื่อไพ่
-            formattedExtra = formattedExtra.replace(/:\s*/g, ':\n');
-
             document.getElementById('extra-list').style.display = "block";
             document.getElementById('extra-list').innerHTML = `<span class="extra-title">⭐ ความหมายเพิ่มเติม</span>${formattedExtra}`;
         }

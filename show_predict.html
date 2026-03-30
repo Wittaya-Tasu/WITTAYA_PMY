@@ -79,21 +79,21 @@
 
 <div class="container">
     <div class="no-print">
-        <h2>📜 ใบสรุปคำพยากรณ์สมบูรณ์แบบ</h2>
+        <h2>📜 ใบสรุปคำพยากรณ์</h2>
         <div class="input-group">
-            <label class="input-label">1. วางผลการเลือกไพ่</label>
+            <label class="input-label">1. วางคำถามและชื่อไพ่</label>
             <textarea id="input-cards" placeholder="วางผลการเลือกไพ่ที่นี่..."></textarea>
         </div>
         <div class="input-group">
-            <label class="input-label">2. วางคำพยากรณ์จาก AI</label>
+            <label class="input-label">2. วางคำพยากรณ์</label>
             <textarea id="input-prediction" placeholder="วางคำทำนายที่นี่..."></textarea>
         </div>
         <button class="btn-process" onclick="processReading()">✨ สร้างใบสรุปคำพยากรณ์</button>
     </div>
 
     <div class="btn-group no-print">
-        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 บันทึกรูปภาพ</button>
-        <button id="btnSavePdf" class="btn-save-pdf" onclick="window.print()">📑 บันทึก PDF</button>
+        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 SAVE IMAGE</button>
+        <button id="btnSavePdf" class="btn-save-pdf" onclick="window.print()">📑 SAVE PDF</button>
     </div>
 
     <div id="capture-area">
@@ -108,7 +108,7 @@
             <div id="card-area" class="custom-layout-3to6"></div>
 
             <div id="prediction-area" class="prediction-box">
-                <div class="prediction-title">✨ รายละเอียดคำทำนายรายใบ ✨</div>
+                <div class="prediction-title">✨ รายละเอียดคำทำนาย ✨</div>
                 <div id="prediction-list"></div>
                 <div id="extra-list" class="extra-section" style="display:none;"></div>
             </div>

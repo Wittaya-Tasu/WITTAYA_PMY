@@ -98,11 +98,11 @@
     <div class="no-print">
         <h2>📜 ใบสรุปคำพยากรณ์</h2>
         <div class="input-group">
-            <label class="input-label">1.คำถาม และ ชื่อไพ่</label>
+            <label class="input-label">1.คำถาม และ ชื่อไพ่.</label>
             <textarea id="input-cards" placeholder="วางผลการเลือกไพ่ที่นี่..."></textarea>
         </div>
         <div class="input-group">
-            <label class="input-label">2.คำพยากรณ์</label>
+            <label class="input-label">2.คำพยากรณ์.</label>
             <textarea id="input-prediction" placeholder="วางคำทำนายที่นี่..."></textarea>
         </div>
         <button class="btn-process" onclick="processReading()">✨ สร้างใบสรุปคำพยากรณ์</button>
@@ -263,13 +263,14 @@
 
         // 🌟 แก้ไขโค้ดส่วนนี้ที่ทำระบบพังในเวอร์ชันก่อนครับ
        if (extraText) {
-            let cleanExtra = extraText.replace('ความหมายพิเศษ:', '').replace('ความหมายพิเศษ:', '').trim();
+            // 1. ลบคำว่า ความหมายพิเศษ หรือ ความหมายเพิ่มเติม ออกก่อน
+            let cleanExtra = extraText.replace(/ความหมาย(พิเศษ|เพิ่มเติม):/g, '').trim();
             
-            // 1. จัดการระยะห่าง "ระหว่างหัวข้อไพ่" (ให้มีช่องว่าง 1 บรรทัดคั่นข้อ)
-            let formattedExtra = cleanExtra.replace(/(?!^)\n*([-*])/g, '\n\n$1'); 
+            // 2. หลังเครื่องหมายโคลอน (:) ให้ตัดขึ้นบรรทัดใหม่ 1 บรรทัด
+            let formattedExtra = cleanExtra.replace(/:\s*/g, ':\n');
             
-            // 2. จัดการระยะห่าง "หลังชื่อไพ่" (ให้ความหมายชิดชื่อไพ่ ไม่กระโดดเบิ้ล)
-            formattedExtra = formattedExtra.replace(/:\s*\n*/g, ':\n'); 
+            // 3. กวาดล้าง "บรรทัดว่าง" ที่ซ้ำซ้อนทั้งหมด ให้เหลือแค่การเคาะบรรทัดเดียวติดกัน
+            formattedExtra = formattedExtra.replace(/\n+/g, '\n');
             
             document.getElementById('extra-list').style.display = "block";
             document.getElementById('extra-list').innerHTML = `<span class="extra-title">⭐ ความหมายพิเศษ</span>${formattedExtra}`;

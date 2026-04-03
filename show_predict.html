@@ -215,8 +215,8 @@
             inputPred = inputPred.replace(summaryRegex, '');
         }
 
-        // ข้อความที่เหลือคือคำทำนายรายใบ
-        let chunks = inputPred.split(/(?:ภาพรวมหลัก:|ความรู้สึก\/ปัจจัยที่ส่งผล:|บทสรุปและคำแนะนำ:|ขยายความเพิ่มเติม:)/g);
+       // ข้อความที่เหลือคือคำทำนายรายใบ
+        let chunks = inputPred.split(/(?:ภาพรวมหลัก:|สถานการณ์-ความรู้สึก:|บทสรุปและคำแนะนำ:|ขยายความเพิ่มเติม:)/g);
         let mainPredictions = chunks.filter(c => c.trim().length > 0).map(c => c.trim());
         
         if (mainPredictions.length < cardLines.length) {

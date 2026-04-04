@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แสดงผลรูปภาพไพ่ - หมอวิทยา ธรรมนาย</title>
+    <title>แสดงผลรูปภาพไพ่. - หมอวิทยา ธรรมนาย</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@600&display=swap');
@@ -24,7 +24,7 @@
         #capture-area { padding: 30px; background: white; border-radius: 15px; position: relative; }
         #result-display { margin-top: 20px; display: none; }
 
-        /* 🌟 ระบบลายน้ำ (Watermark) */
+        /* 🌟 ระบบลายน้ำ (Watermark) - อัปเดตใหม่ */
         .section-container { position: relative; width: 100%; }
         
         .watermark-overlay {
@@ -35,7 +35,9 @@
             font-family: 'Kanit', sans-serif;
             font-size: 24px;
             font-weight: bold;
-            color: rgba(0, 0, 0, 0.15); /* ความเข้ม 15% */
+            color: rgba(255, 255, 255, 0.45); /* สีขาวโปร่งแสง */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4); /* เพิ่มเงาให้ตัวหนังสือโดดเด้งจากไพ่ */
+            letter-spacing: 1px;
             white-space: nowrap;
             pointer-events: none;
             z-index: 10;
@@ -75,6 +77,7 @@
             border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; 
         }
 
+        /* สีปกติ */
         .card-very-good { background-color: #0047AB !important; border-color: #003380 !important; }
         .card-very-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
@@ -90,6 +93,17 @@
         .card-very-bad { background-color: #b71c1c !important; border-color: #7f0000 !important; }
         .card-very-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
+        /* 🌟 สีพิเศษสำหรับ ศัตรู และ โรคภัย (อัปเดตใหม่) */
+        .alert-good { background-color: #616A6B !important; border-color: #4D5656 !important; } /* เทาเข้ม */
+        .alert-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+
+        .alert-neutral { background-color: #17202A !important; border-color: #000000 !important; } /* ดำ */
+        .alert-neutral .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+
+        .alert-bad { background-color: #C0392B !important; border-color: #922B21 !important; } /* แดง */
+        .alert-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
+
+        /* 🌟 Golden Zone */
         .card-gold-zone { 
             background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; 
             border-color: #aa771c !important; 
@@ -130,7 +144,7 @@
         <div id="result-display">
             <div class="section-container">
                 <div id="master-cards-area" class="master-cards-layout"></div>
-                <div class="mark-overlay">พรหมญาณพยากรณ์ : หมอวิทยา ธรรมนาย</div>
+                <div class="watermark-overlay">© สงวนลิขสิทธิ์ พรหมญาณพยากรณ์ : หมอวิทยา ธรรมนาย</div>
             </div>
             
             <div id="display-question" class="question-box"></div>
@@ -157,9 +171,9 @@
     // --- ตำแหน่งเตือนภัย ---
     const ALERT_POSITIONS = ["ศัตรู", "โรคภัย"];
 
-    // --- กลุ่มทรัพย์สิน (Golden Zone) ---
+    // --- กลุ่มทรัพย์สิน (Golden Zone) อัปเดตใหม่ ---
     const WEALTH_CARDS = ["410", "411", "415", "416", "424", "429"];
-    const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง", "ความสุข", "การงาน", "ลาภยศ"];
+    const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง", "โชคลาภ", "ความสุข", "พื้นดวง", "สรุปดวงชะตา", "สรุป"];
 
     function processCards() {
         const inputText = document.getElementById('input-text').value;
@@ -191,7 +205,7 @@
 
         const totalCards = cardLines.length;
 
-        // 🌟 เปลี่ยนข้อความถ้าเป็นแบบ 12 ใบ และคำนวณเดือนอัตโนมัติ
+        // 🌟 เปลี่ยนข้อความและคำนวณเดือนอัตโนมัติ (อัปเดตสีเป็นเทาเข้ม #4a4a4a)
         if (totalCards === 12) {
             const thaiMonths = [
                 "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
@@ -204,7 +218,7 @@
             const month2 = thaiMonths[(currentMonthIndex + 2) % 12];
             const month3 = thaiMonths[(currentMonthIndex + 3) % 12];
             
-            displayQuestion.innerHTML = `🌟 <b>ไพ่พรหมญาณ 12 ใบ : พื้นดวงชะตาระยะสั้น (ปัจจุบัน - 3 เดือน) : <span style="color: #e74c3c;">${month1}-${month2}-${month3}</span></b>`;
+            displayQuestion.innerHTML = `🌟 <b>ไพ่พรหมญาณ 12 ใบ : พื้นดวงชะตาระยะสั้น (ปัจจุบัน - 3 เดือน) : <span style="color: #4a4a4a;">${month1} - ${month2} - ${month3}</span></b>`;
         } else {
             displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
         }
@@ -221,14 +235,17 @@
             let cardClass = "card-item";
             let labelClass = "pos-label";
 
-            if (WEALTH_POSITIONS.includes(posPart) && WEALTH_CARDS.includes(cardId)) {
-                cardClass += " card-gold-zone";
-            } else if (ALERT_POSITIONS.includes(posPart)) {
-                if (BAD.includes(cardId) || VERY_BAD.includes(cardId)) {
-                    cardClass += " card-very-bad";
-                } else {
-                    cardClass += " card-bad";
+            // 🌟 ลอจิกการให้สี (Override ลำดับความสำคัญ: ศัตรู/โรคภัย -> Golden Zone -> สีปกติ)
+            if (ALERT_POSITIONS.includes(posPart)) {
+                if (VERY_GOOD.includes(cardId) || GOOD.includes(cardId)) {
+                    cardClass += " alert-good";     // เทาเข้ม
+                } else if (NEUTRAL.includes(cardId)) {
+                    cardClass += " alert-neutral";  // ดำ
+                } else { 
+                    cardClass += " alert-bad";      // แดง
                 }
+            } else if (WEALTH_POSITIONS.includes(posPart) && WEALTH_CARDS.includes(cardId)) {
+                cardClass += " card-gold-zone";     // สีทองประกาย
             } else if (VERY_BAD.includes(cardId)) {
                 cardClass += " card-very-bad";
             } else if (BAD.includes(cardId)) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หมอวิทยา ธรรมนาย: เลือกไพ่</title>
+    <title>หมอวิทยา ธรรมนาย : เลือกไพ่..</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
 
@@ -30,7 +30,7 @@
             padding-top: 12px;
             border-top: 1px dashed #ccc;
             text-align: center;
-            line-height: 1.4; 
+            line-height: 1.4;
         }
 
         .user-info-box {
@@ -206,7 +206,6 @@
         401:"พระเพลิง", 402:"พระแม่ปาราวตี", 403:"พระขันธกุมาร", 404:"พระพิรุณ", 405:"พระพรหมฤาษี", 406:"พระนางสุรัสวดี", 407:"ท้าววิรุฬหก", 408:"พระอสุรินทร์ราหู", 409:"พระเกตุมงคล", 410:"ท้าวเวสสุวรรณ", 411:"พระพิฆเนศ", 412:"พระราหู", 413:"พระศิวะ", 414:"พระอินทร์", 415:"พระลักษมี", 416:"ท้าวธตรฐ", 417:"พระวิษณุกรม", 418:"พระนารายณ์ทรงสุบรรณ", 419:"พระเทวฤาษี", 420:"รจนากับสังข์ทอง", 421:"พระแม่ธรณี", 422:"พระรามกับสีดา", 423:"พญาครุฑกับนางกากี", 424:"พระแม่โพสพ", 425:"หนุมานกับนางเบญจกาย", 426:"กามเทพ", 427:"เมขลากับรามสูร", 428:"พรานบุญจับนางโมราห์", 429:"พระแม่นางกวัก", 430:"ทศกัณฐ์ออกรบ", 431:"พระยายมราช", 432:"โมรา", 433:"ไกรทองปราบชาละวัน", 434:"พระอภัยมณีกับนางผีเสื้อสมุทร", 435:"ความไม่เที่ยง", 436:"สัจธรรม"
     };
 
-    // ไพ่พิเศษที่ต้องจับเพิ่ม
     const EXTRA_CARD_IDS = [201, 208, 211];
     const POS_3 = ["ไพ่สำคัญ", "ความรู้สึก", "คำแนะนำ", "ขยายความ", "ขยายความ", "ขยายความ"];
     const POS_12 = ["พื้นดวง", "ทรัพย์สิน", "บ้านช่อง", "ญาติ", "บริวาร", "ศัตรู", "คู่ครอง", "โรคภัย", "ความสุข", "การงาน", "โชคลาภ", "สรุปดวงชะตา"];
@@ -312,12 +311,12 @@
             element.classList.add('selected');
             element.innerHTML = `${selectedCards.length}`;
             
-            // 🔥 แก้ไขบั๊กตรงนี้: เมื่อกดเจอไพ่พิเศษ ให้เด้งป๊อปอัปแจ้งทันที ไม่ต้องรอให้หยิบครบ 3 ใบ
-            if (currentMode === 3 && EXTRA_CARD_IDS.includes(cardId) && maxAllowed < 6) {
+            // 🔥 ตรวจสอบให้แจ้งเตือน ป๊อปอัป *เฉพาะ* เมื่อหยิบใบที่ 3, 4 หรือ 5 แล้วได้ไพ่พิเศษเท่านั้น
+            if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length <= 5 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
                 document.getElementById('extra-card-popup').style.display = 'flex';
-                document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์เลือกไพ่เพิ่ม (รวมโควต้าทั้งหมด ${maxAllowed} ใบ)`;
-                return;
+                document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์เลือกไพ่เพิ่ม (ต้องหยิบให้ครบ ${maxAllowed} ใบ)`;
+                return; // หยุดทำงานตรงนี้ เพื่อให้เจ้าชะตากดรับทราบก่อน ไม่ข้ามไปสรุปผล
             }
 
             if (selectedCards.length === maxAllowed) showResults();
@@ -342,15 +341,15 @@
                 cardDiv.innerHTML = `${selectedCards.length}`;
             }
 
-            // 🔥 แก้ไขบั๊กตรงนี้เช่นกัน สำหรับระบบสุ่มออโต้
-            if (currentMode === 3 && EXTRA_CARD_IDS.includes(cardId) && maxAllowed < 6) {
+            // 🔥 ลอจิกเดียวกันสำหรับระบบสุ่ม
+            if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length <= 5 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
             }
         }
         showResults();
 
         if (currentMode === 3 && maxAllowed > 3) {
-            document.getElementById('status-msg').innerHTML = `✨ <b>ระบบพบไพ่พิเศษ!</b> จึงจั่วเพิ่มให้อัตโนมัติ (รวม ${maxAllowed} ใบ)`;
+            document.getElementById('status-msg').innerHTML = `✨ <b>ระบบพบไพ่พิเศษ!</b> จึงจั่วเพิ่มให้อัตโนมัติ (รวมทั้งหมด ${maxAllowed} ใบ)`;
         }
     }
 

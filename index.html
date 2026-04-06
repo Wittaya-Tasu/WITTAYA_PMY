@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หมอวิทยา ธรรมนาย : เลือกไพ่.</title>
+    <title>หมอวิทยา ธรรมนาย. : เลือกไพ่.</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
 
@@ -18,8 +18,21 @@
             margin: 0 auto 25px auto; max-width: 550px; text-align: left;
             border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-        .ethics-box h4 { margin-top: 0; color: #c0392b; font-family: 'Kanit', sans-serif; font-size: 1.3em; margin-bottom: 10px; }
+        /* เปลี่ยน Font หัวข้อจรรยาบรรณเป็น Sarabun ตัวหนา */
+        .ethics-box h4 { margin-top: 0; color: #c0392b; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 1.4em; margin-bottom: 10px; }
         .ethics-box ol { margin: 0; padding-left: 20px; color: #34495e; font-size: 1.05em; line-height: 1.6; font-weight: bold; }
+
+        /* คลาสใหม่สำหรับบรรทัดข้อควรระวังพิเศษ */
+        .privacy-notice {
+            color: #2980b9; /* สีน้ำเงิน */
+            font-weight: bold; /* ตัวหนา */
+            font-size: 1.25em; /* ขนาดใหญ่ */
+            margin-top: 15px;
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px dashed #ccc;
+            text-align: center;
+        }
 
         .user-info-box {
             background: #fff; padding: 20px; border-radius: 12px;
@@ -143,10 +156,10 @@
                 <li>ไม่ทำนาย ดวงชะตาเด็กน้อย(เด็กทารก - 10 ขวบ)</li>
                 <li>ไม่ทำนาย ยุยงให้คู่ครอง เลิกลา หย่าร้างกัน</li>
                 <li>ไม่ทำนาย เพื่อผลประโยชน์หรือแนะนำพิธีกรรมแปลกๆ</li>
-                <li>ข้อมูลและคำพยากรณ์ของเจ้าชะตา จะเป็นความลับไม่ถูกนำไปเปิดเผย</li>
             </ol>
+            <p class="privacy-notice">🔒 ข้อมูลและคำพยากรณ์ของเจ้าชะตา จะเป็นความลับไม่ถูกนำไปเปิดเผย</p>
         </div>
-        <button onclick="startFlow(12)" style="font-size: 1.80em; padding: 15px 40px;">🔮 เข้าสู่การเปิดไพ่ แบบ 12 ใบ</button>
+        <button onclick="startFlow(12)" style="font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 1.80em; padding: 15px 40px;">🔮 เข้าสู่การเปิดไพ่ แบบ 12 ใบ</button>
     </div>
 
     <div id="card-selection-area" style="display:none;">

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสร้างการ์ดนัดหมาย - หมอโย</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #d4a373;
+            --secondary: #faedcd;
+            --text-main: #333;
+            --bg-main: #f4f4f9;
+        }
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        /* แผงควบคุม (ฟอร์มกรอกข้อมูล) */
+        .control-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .control-panel h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 20px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .birth-date-section {
+            display: none;
+            background: #fafafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+            margin-bottom: 15px;
+        }
+        .birth-date-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Prompt', sans-serif;
+            margin-top: 10px;
+        }
+        .download-btn {
+            background: #2a9d8f;
+            color: white;
+        }
+        .download-btn:hover { background: #21867a; }
+        
+        .copy-btn {
+            background: #e9c46a;
+            color: #333;
+        }
+        .copy-btn:hover { background: #e0b64d; }
+
+        .copy-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        .copy-textarea {
+            height: 120px;
+            background: #f9f9f9;
+            resize: none;
+        }
+
+        /* ส่วนของการ์ดพรีวิว */
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card-container {
+            background: transparent;
+            padding: 20px;
+        }
+        .card {
+            width: 500px;
+            background: #ffffff;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            color: var(--text-main);
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary)); 
+        }
+        .card h3 {
+            color: #b07d4b;
+            text-align: center;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .greeting {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .details-box {
+            background: #fafafc;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #f0f0f0;
+        }
+        .detail-item {
+            display: flex;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+        .detail-label {
+            font-weight: 600;
+            width: 140px;
+            color: #4a4a4a;
+            flex-shrink: 0;
+        }
+        .detail-value {
+            flex: 1;
+            color: #222;
+        }
+        .status-success { color: #2a9d8f; font-weight: 600; }
+        .status-pending { color: #e76f51; font-weight: 600; }
+        
+        .card-birth-date {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        .note-section {
+            display: none;
+            font-size: 14px;
+            color: #d62828;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .preparation {
+            text-align: center;
+            background: rgba(212, 163, 115, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .preparation h4 {
+            color: #b07d4b;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .preparation p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #555;
+        }
+        
+        /* แจ้งเตือนเมื่อ Copy สำเร็จ */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 16px;
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h2>กรอกข้อมูลลูกค้า</h2>
+        
+        <div class="form-group">
+            <label>ชื่อลูกค้า</label>
+            <input type="text" id="inp-name" value="คุณหมอโย" oninput="updateCard()">
+        </div>
+
+        <div class="form-group">
+            <label>รูปแบบการดูดวง</label>
+            <select id="inp-type" onchange="handleTypeChange()">
+                <option value="1">แบบที่ 1 : แบบระยะสั้น 12 ใบ</option>
+                <option value="2">แบบที่ 2 : แบบประจำปี</option>
+                <option value="3">แบบที่ 3 : แบบละเอียด (กราฟชีวิต)</option>
+            </select>
+        </div>
+
+        <div class="birth-date-section" id="inp-birth-section">
+            <label style="color:var(--primary);">ข้อมูลวันเกิดเจ้าชะตา</label>
+            <div class="birth-date-grid">
+                <input type="text" id="inp-b-dayname" placeholder="วัน" oninput="updateCard()">
+                <input type="text" id="inp-b-date" placeholder="วันที่" oninput="updateCard()">
+                <input type="text" id="inp-b-month" placeholder="เดือน" oninput="updateCard()">
+                <input type="text" id="inp-b-year" placeholder="พ.ศ." oninput="updateCard()">
+                <input type="text" id="inp-b-zodiac" placeholder="ปีนักษัตร" oninput="updateCard()">
+                <input type="text" id="inp-b-age" placeholder="อายุ" oninput="updateCard()">
+            </div>
+        </div>
+
+        <div class="form-group birth-date-grid">
+            <div>
+                <label>เวลาเริ่ม</label>
+                <input type="time" id="inp-time-start" value="10:00" oninput="updateCard()">
+            </div>
+            <div>
+                <label>เวลาจบ</label>
+                <input type="time" id="inp-time-end" value="11:00" oninput="updateCard()">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>วันที่นัดหมาย</label>
+            <input type="text" id="inp-appoint-date" value="วันอังคารที่ 15 เมษายน 2569" oninput="updateCard()">
+        </div>
+
+        <div class="form-group">
+            <label>ช่องทางการดู</label>
+            <select id="inp-channel" onchange="updateCard()">
+                <option value="MS Team">MS Team</option>
+                <option value="Line VDO Call">Line VDO Call</option>
+                <option value="Face to Face">Face to Face</option>
+                <option value="Online">Online</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>สถานะการโอนเงิน</label>
+            <select id="inp-status" onchange="updateCard()">
+                <option value="paid">โอนค่าครูแล้ว</option>
+                <option value="unpaid">ยังไม่ได้โอน</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>ลิงก์สำหรับเข้าประชุม (MS Team)</label>
+            <input type="text" id="inp-link" placeholder="วางลิงก์ที่นี่..." oninput="updateCard()">
+        </div>
+
+        <div class="form-group">
+            <label>หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+            <textarea id="inp-note" rows="2" placeholder="ใส่หมายเหตุ หรือปล่อยว่างไว้..." oninput="updateCard()"></textarea>
+        </div>
+
+        <button class="download-btn" onclick="downloadCard()">📸 1. ดาวน์โหลดการ์ดเป็นรูปภาพ</button>
+
+        <div class="copy-section">
+            <label>ตัวอย่างข้อความสำหรับส่งให้ลูกค้า</label>
+            <textarea id="out-copy-text" class="copy-textarea" readonly></textarea>
+            <button class="copy-btn" onclick="copyText()">📝 2. คัดลอกข้อความ + ลิงก์</button>
+        </div>
+    </div>
+
+    <div class="preview-section">
+        <div class="card-container" id="capture-area">
+            <div class="card">
+                <h3>รายละเอียดการจองคิว</h3>
+                
+                <div class="greeting">
+                    สวัสดีครับ <span id="out-name-greeting">คุณหมอโย</span> อันนี้เป็นรายละเอียดจองคิว<br>และลิงก์เข้าดูครับ 👇
+                </div>
+
+                <div class="details-box">
+                    <div class="detail-item">
+                        <div class="detail-label">ชื่อ:</div>
+                        <div class="detail-value" id="out-name">คุณหมอโย</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">ประเภทการดูดวง:</div>
+                        <div class="detail-value" id="out-type">แบบที่ 1 : แบบระยะสั้น 12 ใบ (<span id="out-price">699</span>฿)</div>
+                    </div>
+                    
+                    <div id="out-birth-section" class="card-birth-date">
+                        <div class="detail-item">
+                            <div class="detail-label">วันเกิด:</div>
+                            <div class="detail-value">
+                                วัน<span id="ob-dayname">-</span> 
+                                ที่ <span id="ob-date">-</span> 
+                                เดือน <span id="ob-month">-</span> 
+                                พ.ศ. <span id="ob-year">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">นักษัตร/อายุ:</div>
+                            <div class="detail-value">
+                                ปี<span id="ob-zodiac">-</span> (อายุ <span id="ob-age">-</span> ปี)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item" style="margin-top: 15px;">
+                        <div class="detail-label">วันนัดดูดวง:</div>
+                        <div class="detail-value" id="out-appoint-date">วันอังคารที่ 15 เมษายน 2569</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">เวลานัด:</div>
+                        <div class="detail-value"><span id="out-time-start">10:00</span> - <span id="out-time-end">11:00</span> น.</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">ช่องทาง:</div>
+                        <div class="detail-value" id="out-channel">MS Team</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">สถานะการโอน:</div>
+                        <div class="detail-value status-success" id="out-status">โอนค่าครูแล้ว</div>
+                    </div>
+                    
+                    <div class="note-section" id="out-note-section">
+                        <b>หมายเหตุ:</b> <span id="out-note"></span>
+                    </div>
+                </div>
+
+                <div class="preparation">
+                    <h4>การเตรียมตัว ก่อนเปิดไพ่พรหมญาณ</h4>
+                    <p>ขอให้อยู่ในสถานที่เงียบ ไม่เสียงดัง / อินเตอร์เน็ตดี<br>
+                    เพราะสมาธิของเจ้าชะตามีผลกับการสื่อสารกับไพ่<br>
+                    จะช่วยให้แม่นยำขึ้น</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">✅ คัดลอกข้อความเรียบร้อยแล้ว!</div>
+
+    <script>
+        const priceMap = {
+            "1": { text: "แบบที่ 1 : แบบระยะสั้น", price: "699" },
+            "2": { text: "แบบที่ 2 : แบบประจำปี", price: "1,099" },
+            "3": { text: "แบบที่ 3 : แบบละเอียด", price: "1,999" }
+        };
+
+        function handleTypeChange() {
+            const typeVal = document.getElementById("inp-type").value;
+            const birthSectionInp = document.getElementById("inp-birth-section");
+            const birthSectionOut = document.getElementById("out-birth-section");
+            
+            document.getElementById("out-type").innerHTML = `${priceMap[typeVal].text} (<b>${priceMap[typeVal].price}฿</b>)`;
+
+            if(typeVal === "2" || typeVal === "3") {
+                birthSectionInp.style.display = "block";
+                birthSectionOut.style.display = "block";
+            } else {
+                birthSectionInp.style.display = "none";
+                birthSectionOut.style.display = "none";
+            }
+            updateCard();
+        }
+
+        function updateCard() {
+            const name = document.getElementById("inp-name").value || "-";
+            const typeVal = document.getElementById("inp-type").value;
+            const typeText = priceMap[typeVal].text;
+            const priceText = priceMap[typeVal].price;
+            const date = document.getElementById("inp-appoint-date").value || "-";
+            const timeStart = document.getElementById("inp-time-start").value || "00:00";
+            const timeEnd = document.getElementById("inp-time-end").value || "00:00";
+            const channel = document.getElementById("inp-channel").value;
+            const statusVal = document.getElementById("inp-status").value;
+            const meetingLink = document.getElementById("inp-link").value || "[ยังไม่ได้ใส่ลิงก์]";
+            
+            let statusText = "โอนค่าครูแล้ว";
+            const statusEl = document.getElementById("out-status");
+            if(statusVal === "paid") {
+                statusEl.innerText = statusText;
+                statusEl.className = "detail-value status-success";
+            } else {
+                statusText = "ยังไม่ได้โอน";
+                statusEl.innerText = statusText;
+                statusEl.className = "detail-value status-pending";
+            }
+
+            // อัปเดตหน้าการ์ด
+            document.getElementById("out-name-greeting").innerText = name;
+            document.getElementById("out-name").innerText = name;
+            document.getElementById("out-appoint-date").innerText = date;
+            document.getElementById("out-time-start").innerText = timeStart;
+            document.getElementById("out-time-end").innerText = timeEnd;
+            document.getElementById("out-channel").innerText = channel;
+
+            // วันเกิด
+            document.getElementById("ob-dayname").innerText = document.getElementById("inp-b-dayname").value || "-";
+            document.getElementById("ob-date").innerText = document.getElementById("inp-b-date").value || "-";
+            document.getElementById("ob-month").innerText = document.getElementById("inp-b-month").value || "-";
+            document.getElementById("ob-year").innerText = document.getElementById("inp-b-year").value || "-";
+            document.getElementById("ob-zodiac").innerText = document.getElementById("inp-b-zodiac").value || "-";
+            document.getElementById("ob-age").innerText = document.getElementById("inp-b-age").value || "-";
+
+            const noteText = document.getElementById("inp-note").value;
+            const noteSection = document.getElementById("out-note-section");
+            if(noteText.trim() !== "") {
+                document.getElementById("out-note").innerText = noteText;
+                noteSection.style.display = "block";
+            } else {
+                noteSection.style.display = "none";
+            }
+
+            // อัปเดตข้อความสำหรับ Copy
+            const copyTemplate = 
+`สวัสดีครับ ${name} อันนี้เป็นรายละเอียดจองคิว
+และลิงก์เข้าดูครับ 👇
+.
+ชื่อ: ${name}
+ประเภทการดูดวง: ${typeText} (${priceText}฿)
+วันนัดดูดวง : ${date}
+เวลานัด : ${timeStart}-${timeEnd} น.
+ช่องทาง: ${channel}
+สถานะการโอน: ${statusText}
+.
+${typeVal === "1" ? "(แบบที่ 1 ไม่ต้องใช้ข้อมูลวันเกิด)\n.\n" : ""}Link สำหรับเข้าประชุม : ${meetingLink}
+.
+การเตรียมตัว ก่อนเปิดไพ่พรหมญาณ
+.
+ขอให้อยู่ในสถานที่เงียบ
+ไม่เสียงดัง /อินเตอร์เน็ตดี
+เพราะสมาธิของเจ้าชะตา
+มีผลกับการสื่อสารกับไพ่
+จะช่วยให้แม่นยำขึ้น`;
+            
+            document.getElementById("out-copy-text").value = copyTemplate;
+        }
+
+        function downloadCard() {
+            const captureElement = document.querySelector('.card');
+            html2canvas(captureElement, {
+                scale: 2,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Booking_Card_${document.getElementById("inp-name").value}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // ฟังก์ชันสำหรับ Copy ข้อความลง Clipboard
+        function copyText() {
+            const copyText = document.getElementById("out-copy-text");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // สำหรับมือถือ
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                // แสดง Toast แจ้งเตือน
+                const toast = document.getElementById("toast");
+                toast.className = "show";
+                setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+            });
+        }
+
+        handleTypeChange();
+    </script>
+</body>
+</html>

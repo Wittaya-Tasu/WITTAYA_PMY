@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบสร้างการ์ดนัดหมาย.v2- หมอโย</title>
+    <title>ระบบสร้างการ์ดนัดหมาย.- หมอโย</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -175,7 +175,6 @@
             flex: 1;
             color: #222;
         }
-        /* กำหนดระยะห่างให้บรรทัดวันเกิด */
         .birth-line {
             margin-bottom: 4px;
         }
@@ -189,10 +188,12 @@
             padding-top: 15px;
             border-top: 1px dashed #ddd;
         }
+        
+        /* ปรับสีหมายเหตุเป็นสีน้ำเงิน */
         .note-section {
             display: none;
             font-size: 14px;
-            color: #1E90FF;
+            color: #1976d2; /* สีน้ำเงินสบายตา */
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px dashed #ddd;
@@ -322,12 +323,12 @@
             <textarea id="inp-note" rows="2" placeholder="ใส่หมายเหตุ หรือปล่อยว่างไว้..." oninput="updateCard()"></textarea>
         </div>
 
-        <button class="download-btn" onclick="downloadCard()">📸 1. ดาวน์โหลดการ์ดเป็นรูปภาพ</button>
+        <button class="download-btn" onclick="downloadCard()">📸 1. ดาวน์โหลดการ์ด</button>
 
         <div class="copy-section">
             <label>ตัวอย่างข้อความสำหรับส่งให้ลูกค้า</label>
             <textarea id="out-copy-text" class="copy-textarea" readonly></textarea>
-            <button class="copy-btn" onclick="copyText()">📝 2. คัดลอกข้อความเฉพาะลิงก์</button>
+            <button class="copy-btn" onclick="copyText()">📝 2. คัดลอกข้อความ</button>
         </div>
     </div>
 
@@ -472,8 +473,8 @@
                 noteSection.style.display = "none";
             }
 
-            // อัปเดตข้อความสำหรับ Copy แบบใหม่ (ให้เหลือแค่ลิงก์)
-            const copyTemplate = `ลิงค์สำหรับเข้าดูดวง :\n${meetingLink}`;
+            // อัปเดตข้อความสำหรับ Copy (เพิ่มชื่อเจ้าชะตาแล้ว)
+            const copyTemplate = `ลิงค์เข้าดูดวง : สำหรับ ${name}\n${meetingLink}`;
             
             document.getElementById("out-copy-text").value = copyTemplate;
         }

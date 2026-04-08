@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แสดงผลรูปภาพไพ่.2- หมอวิทยา ธรรมนาย</title>
+    <title>แสดงผลรูปภาพไพ่.v2 -หมอวิทยา ธรรมนาย</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@600&display=swap');
@@ -13,114 +13,106 @@
         
         .no-print { margin-bottom: 20px; }
         h2 { color: #2c3e50; font-family: 'Kanit', sans-serif; font-size: 2.2em; margin-bottom: 5px; }
-        textarea { width: 95%; height: 80px; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; margin-bottom: 15px; resize: none; }
+        textarea { width: 95%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; margin-bottom: 15px; resize: vertical; font-family: 'Sarabun', sans-serif; }
+        #input-text { height: 80px; }
         
         .btn-group { margin-bottom: 20px; }
         button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; transition: 0.3s; margin: 5px; }
-        .btn-process { background: #2980b9; color: white; }
+        .btn-process { background: #2980b9; color: white; width: 100%; max-width: 400px; font-size: 1.1em; padding: 15px;}
         .btn-save-img { background: #27ae60; color: white; display: none; }
         button:hover { opacity: 0.8; transform: translateY(-2px); }
 
         #capture-area { padding: 30px; background: white; border-radius: 15px; position: relative; }
         #result-display { margin-top: 20px; display: none; }
 
-        /* 🌟 ระบบลายน้ำ (Watermark) - อัปเดตใหม่ */
+        /* 🌟 ระบบลายน้ำ (Watermark) */
         .section-container { position: relative; width: 100%; }
         
         .watermark-overlay {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            font-family: 'Kanit', sans-serif;
-            font-size: 24px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.45); /* สีขาวโปร่งแสง */
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4); /* เพิ่มเงาให้ตัวหนังสือโดดเด้งจากไพ่ */
-            letter-spacing: 1px;
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 10;
-            text-align: center;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 100%; font-family: 'Kanit', sans-serif; font-size: 24px; font-weight: bold;
+            color: rgba(255, 255, 255, 0.45); text-shadow: 2px 2px 4px rgba(0,0,0,0.4); 
+            letter-spacing: 1px; white-space: nowrap; pointer-events: none; z-index: 10; text-align: center;
         }
         
         /* 🌟 ส่วนของไพ่ครู (Master Cards) */
         .master-cards-layout {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 25px;
-            border-bottom: 2px dashed #bdc3c7; 
-            position: relative; 
-            z-index: 1;
+            display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; padding-bottom: 25px;
+            border-bottom: 2px dashed #bdc3c7; position: relative; z-index: 1;
         }
-        .master-card {
-            flex: 1;
-            max-width: 110px; 
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            border: 2px solid #d4af37; 
-            background: #fff;
-        }
+        .master-card { flex: 1; max-width: 110px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid #d4af37; background: #fff; }
         .master-card img { width: 100%; display: block; }
 
-        .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 8px solid #e67e22; text-align: left; }
+        .question-box { font-size: 1.4em; font-weight: bold; color: #2c3e50; background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 8px solid #e67e22; text-align: left; }
+
+        /* 🌟 กล่องแสดงข้อมูลเจ้าชะตา */
+        .user-context-box {
+            background: #fdfefe; border-left: 6px solid #3498db; padding: 20px; 
+            border-radius: 10px; margin-bottom: 30px; text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-size: 1.15em; line-height: 1.6;
+            display: none;
+        }
+        .context-label { font-weight: bold; color: #2980b9; margin-right: 5px; font-family: 'Kanit', sans-serif; }
+        .user-context-box p { margin: 8px 0; color: #34495e; }
 
         .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; transition: 0.3s; }
         .card-item img { width: 100%; border-radius: 5px; display: block; }
         
-        .pos-label { 
-            display: block; font-weight: bold; 
-            font-size: 0.85em; margin-bottom: 8px; 
-            border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; 
-        }
+        .pos-label { display: block; font-weight: bold; font-size: 0.85em; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
 
         /* สีปกติ */
         .card-very-good { background-color: #0047AB !important; border-color: #003380 !important; }
         .card-very-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
-
         .card-good { background-color: #bbdefb !important; border-color: #90caf9 !important; }
         .card-good .pos-label { color: #0d47a1 !important; border-bottom-color: rgba(13,71,161,0.2) !important; }
-
         .card-neutral { background-color: #ffffff !important; border-color: #eeeeee !important; }
         .card-neutral .pos-label { color: #000000 !important; border-bottom-color: #e0e0e0 !important; }
-
         .card-bad { background-color: #212121 !important; border-color: #000000 !important; }
         .card-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
-
         .card-very-bad { background-color: #b71c1c !important; border-color: #7f0000 !important; }
         .card-very-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* 🌟 สีพิเศษสำหรับ ศัตรู และ โรคภัย (อัปเดตใหม่) */
-        .alert-good { background-color: #616A6B !important; border-color: #4D5656 !important; } /* เทาเข้ม */
+        /* สีพิเศษสำหรับ ศัตรู และ โรคภัย */
+        .alert-good { background-color: #616A6B !important; border-color: #4D5656 !important; } 
         .alert-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
-
-        .alert-neutral { background-color: #17202A !important; border-color: #000000 !important; } /* ดำ */
+        .alert-neutral { background-color: #17202A !important; border-color: #000000 !important; } 
         .alert-neutral .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
-
-        .alert-bad { background-color: #C0392B !important; border-color: #922B21 !important; } /* แดง */
+        .alert-bad { background-color: #C0392B !important; border-color: #922B21 !important; } 
         .alert-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* 🌟 Golden Zone */
+        /* Golden Zone */
         .card-gold-zone { 
             background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; 
-            border-color: #aa771c !important; 
-            box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4);
+            border-color: #aa771c !important; box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4);
         }
         .card-gold-zone .pos-label { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); border-bottom-color: rgba(255,255,255,0.4) !important; }
 
-        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 25px; max-width: 850px; margin: 0 auto; position: relative; z-index: 1; }
-        .custom-layout-12 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0 25px; position: relative; z-index: 1; }
+        .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px 25px; max-width: 850px; margin: 0 auto; position: relative; z-index: 1; }
+        .custom-layout-12 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px 25px; position: relative; z-index: 1; }
 
         .pos-D1 { grid-area: 1 / 4; } .pos-C2 { grid-area: 2 / 3; } .pos-E2 { grid-area: 2 / 5; }
         .pos-B3 { grid-area: 3 / 2; } .pos-D3 { grid-area: 3 / 4; } .pos-F3 { grid-area: 3 / 6; }
         .pos-A4 { grid-area: 4 / 1; } .pos-B4 { grid-area: 4 / 2; } .pos-C4 { grid-area: 4 / 3; }
         .pos-E4 { grid-area: 4 / 5; } .pos-F4 { grid-area: 4 / 6; } .pos-G4 { grid-area: 4 / 7; }
 
+        /* 🌟 พื้นที่แสดงคำพยากรณ์สำหรับโหมด 3-6 ใบ */
+        #prediction-display-area {
+            margin-top: 35px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 700; /* ตัวหนา */
+            font-size: 1.3em;
+            line-height: 1.6;
+            text-align: left;
+            padding: 0 15px;
+            display: none; /* ซ่อนไว้ก่อน จะแสดงเฉพาะมีข้อมูล 3 ใบ */
+        }
+
+        /* กล่องคุมโซนกรอกข้อมูล */
+        .input-zone { background: #fafafa; padding: 20px; border-radius: 15px; border: 1px solid #e0e0e0; margin-bottom: 20px; text-align: left; }
+        .input-zone label { font-weight: bold; color: #2c3e50; display: block; margin-bottom: 5px; font-family: 'Kanit', sans-serif; }
+
         @media print {
-            .no-print, .btn-group, textarea { display: none !important; }
+            .no-print, .btn-group, .input-zone { display: none !important; }
             .container { box-shadow: none; border: none; width: 100%; margin: 0; padding: 0; }
             .custom-layout-12, .custom-layout-3to6 { display: grid !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
@@ -130,13 +122,26 @@
 
 <div class="container">
     <div class="no-print">
-        <h2>🔮 ระบบแสดงไพ่.-หมอวิทยา ธรรมนาย</h2>
-        <textarea id="input-text" placeholder="วางผลลัพธ์ที่คัดลอกมาที่นี่..."></textarea>
+        <h2>🔮 ระบบแสดงไพ่-หมอวิทยา ธรรมนาย</h2>
+        
+        <div class="input-zone">
+            <label>1. วางรายการไพ่ที่เลือกมา:</label>
+            <textarea id="input-text" placeholder="วางผลลัพธ์รายการไพ่ที่คัดลอกมาที่นี่..."></textarea>
+            
+            <label style="color: #8e44ad; margin-top: 10px;">2. พิมพ์คำพยากรณ์ (เฉพาะแบบ 3-6 ใบ):</label>
+            <textarea id="input-prediction" placeholder="ก๊อปปี้คำพยากรณ์จาก AI มาวางที่นี่..." style="height: 120px;"></textarea>
+            
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                <label style="color: #d35400; margin: 0;">🎨 สีตัวอักษรคำทำนาย (HEX):</label>
+                <input type="color" id="input-color" value="#2c3e50" style="cursor: pointer; width: 50px; height: 35px; border: none; border-radius: 5px; padding: 0;">
+            </div>
+        </div>
+        
+        <button class="btn-process" onclick="processCards()">🖼️ สั่งสร้างภาพไพ่</button>
     </div>
 
     <div class="btn-group no-print">
-        <button class="btn-process" onclick="processCards()">🖼️ SHOW CARD</button>
-        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 SAVE IMAGE</button>
+        <button id="btnSaveImg" class="btn-save-img" onclick="saveAsImage()">💾 SAVE IMAGE (บันทึกรูป)</button>
         <button class="btn-save-img" style="background:#95a5a6; display:inline-block;" onclick="window.print()">📑 SAVE PDF</button>
     </div>
 
@@ -149,9 +154,13 @@
             
             <div id="display-question" class="question-box"></div>
             
+            <div id="user-context-display" class="user-context-box"></div>
+            
             <div id="card-area"></div>
 
-            <p style="font-size: 12px; color: #bdc3c7; margin-top: 20px; text-align: center; font-weight: bold;">พรหมญาณพยากรณ์ โดย หมอวิทยา ธรรมนาย</p>
+            <div id="prediction-display-area"></div>
+
+            <p style="font-size: 14px; color: #bdc3c7; margin-top: 30px; text-align: center; font-weight: bold;">พรหมญาณพยากรณ์ โดย หมอวิทยา ธรรมนาย</p>
         </div>
     </div>
 </div>
@@ -161,32 +170,38 @@
     const IMAGE_EXT = '.jpg'; 
     const gridLayoutMap12 = ["pos-D1", "pos-C2", "pos-E2", "pos-B3", "pos-F3", "pos-A4", "pos-G4", "pos-F4", "pos-E4", "pos-C4", "pos-B4", "pos-D3"];
     
-    // --- ฐานข้อมูลกลุ่มไพ่ 5 สถานะ ---
     const VERY_GOOD = ["101", "409", "411", "424"];
     const GOOD = ["104", "105", "106", "201", "202", "203", "204", "206", "207", "301", "304", "307", "312", "402", "404", "405", "406", "410", "414", "415", "416", "417", "418", "419", "421", "422", "426", "429"];
     const NEUTRAL = ["102", "209", "210", "211", "303", "305", "309", "311", "403", "407", "420", "435", "436"];
     const BAD = ["103", "107", "205", "208", "212", "302", "306", "308", "310", "413", "423", "425", "427", "428", "430", "432", "433", "434"];
     const VERY_BAD = ["401", "408", "412", "431"];
 
-    // --- ตำแหน่งเตือนภัย ---
     const ALERT_POSITIONS = ["ศัตรู", "โรคภัย"];
-
-    // --- กลุ่มทรัพย์สิน (Golden Zone) อัปเดตใหม่ ---
     const WEALTH_CARDS = ["410", "411", "415", "416", "424", "429"];
     const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง", "ลาภยศ", "ความสุข", "พื้นดวง", "สรุปดวงชะตา", "สรุป"];
 
     function processCards() {
         const inputText = document.getElementById('input-text').value;
+        const predText = document.getElementById('input-prediction').value.trim();
+        const predColor = document.getElementById('input-color').value; // ดึงค่าสี HEX
+        
         const resultDisplay = document.getElementById('result-display');
         const displayQuestion = document.getElementById('display-question');
+        const contextDisplay = document.getElementById('user-context-display');
         const cardArea = document.getElementById('card-area');
         const masterArea = document.getElementById('master-cards-area');
+        const predDisplayArea = document.getElementById('prediction-display-area');
         const btnSave = document.getElementById('btnSaveImg');
 
-        if (!inputText.trim()) { alert("กรุณาวางข้อความก่อนครับ"); return; }
+        if (!inputText.trim()) { alert("กรุณาวางข้อมูลรายชื่อไพ่ก่อนครับ"); return; }
 
         cardArea.innerHTML = ""; 
         masterArea.innerHTML = ""; 
+        contextDisplay.innerHTML = "";
+        predDisplayArea.innerHTML = "";
+        
+        contextDisplay.style.display = 'none';
+        predDisplayArea.style.display = 'none';
         resultDisplay.style.display = 'block';
         btnSave.style.display = 'inline-block';
 
@@ -196,33 +211,73 @@
 
         const lines = inputText.split('\n');
         let question = "ดูดวงภาพรวม";
+        let situationText = "";
+        let questionText = "";
+        let isParsingSituation = false;
+        let isParsingQuestion = false;
         const cardLines = [];
 
         lines.forEach(line => {
-            if (line.includes('❓ คำถาม:')) question = line.replace('❓ คำถาม:', '').trim();
-            if (/^\d+\./.test(line) && line.includes(':')) cardLines.push(line);
+            if (/^\d+\./.test(line) && line.includes(':')) {
+                cardLines.push(line);
+                isParsingSituation = false;
+                isParsingQuestion = false;
+                return;
+            }
+
+            if (line.includes('สถานการณ์:')) {
+                isParsingSituation = true;
+                isParsingQuestion = false;
+                situationText += line.replace('สถานการณ์:', '').trim() + "<br>";
+            } else if (line.includes('❓ คำถาม:')) {
+                isParsingSituation = false;
+                isParsingQuestion = true;
+                let cleanQ = line.replace('❓ คำถาม:', '').trim();
+                questionText += cleanQ + "<br>";
+                question = cleanQ || question; 
+            } else if (line.includes('--------------------------')) {
+                isParsingSituation = false;
+                isParsingQuestion = false;
+            } else if (isParsingSituation) {
+                if(line.trim()) situationText += line.trim() + "<br>";
+            } else if (isParsingQuestion) {
+                if(line.trim()) questionText += line.trim() + "<br>";
+            }
         });
 
         const totalCards = cardLines.length;
 
-        // 🌟 เปลี่ยนข้อความและคำนวณเดือนอัตโนมัติ (อัปเดตสีเป็นเทาเข้ม #4a4a4a)
+        // Title Box
         if (totalCards === 12) {
-            const thaiMonths = [
-                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-            ];
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); 
-            
             const month1 = thaiMonths[(currentMonthIndex + 1) % 12];
             const month2 = thaiMonths[(currentMonthIndex + 2) % 12];
             const month3 = thaiMonths[(currentMonthIndex + 3) % 12];
-            
             displayQuestion.innerHTML = `🌟 <b>ไพ่พรหมญาณ 12 ใบ : พื้นดวงชะตาระยะสั้น (ปัจจุบัน - 3 เดือน) : <span style="color: #4a4a4a;">${month1} - ${month2} - ${month3}</span></b>`;
         } else {
             displayQuestion.innerHTML = `❓ <b>คำถาม:</b> ${question}`;
         }
 
+        // Context Box
+        situationText = situationText.replace(/<br>$/, '').trim();
+        questionText = questionText.replace(/<br>$/, '').trim();
+        let contextHTML = "";
+        
+        if (situationText) {
+            contextHTML += `<p><span class="context-label">📌 สถานการณ์:</span> ${situationText}</p>`;
+        }
+        if (questionText && questionText !== "วิเคราะห์พื้นดวงชะตา" && totalCards === 12) {
+            contextHTML += `<p><span class="context-label">❓ คำถามเพิ่มเติม:</span> <br>${questionText}</p>`;
+        }
+
+        if (contextHTML !== "") {
+            contextDisplay.innerHTML = contextHTML;
+            contextDisplay.style.display = 'block';
+        }
+
+        // สร้างกระดานไพ่
         if (totalCards === 12) cardArea.className = 'custom-layout-12';
         else if (totalCards >= 3) cardArea.className = 'custom-layout-3to6';
 
@@ -235,28 +290,17 @@
             let cardClass = "card-item";
             let labelClass = "pos-label";
 
-            // 🌟 ลอจิกการให้สี (Override ลำดับความสำคัญ: ศัตรู/โรคภัย -> Golden Zone -> สีปกติ)
             if (ALERT_POSITIONS.includes(posPart)) {
-                if (VERY_GOOD.includes(cardId) || GOOD.includes(cardId)) {
-                    cardClass += " alert-good";     // เทาเข้ม
-                } else if (NEUTRAL.includes(cardId)) {
-                    cardClass += " alert-neutral";  // ดำ
-                } else { 
-                    cardClass += " alert-bad";      // แดง
-                }
+                if (VERY_GOOD.includes(cardId) || GOOD.includes(cardId)) { cardClass += " alert-good"; } 
+                else if (NEUTRAL.includes(cardId)) { cardClass += " alert-neutral"; } 
+                else { cardClass += " alert-bad"; }
             } else if (WEALTH_POSITIONS.includes(posPart) && WEALTH_CARDS.includes(cardId)) {
-                cardClass += " card-gold-zone";     // สีทองประกาย
-            } else if (VERY_BAD.includes(cardId)) {
-                cardClass += " card-very-bad";
-            } else if (BAD.includes(cardId)) {
-                cardClass += " card-bad";
-            } else if (VERY_GOOD.includes(cardId)) {
-                cardClass += " card-very-good";
-            } else if (GOOD.includes(cardId)) {
-                cardClass += " card-good";
-            } else {
-                cardClass += " card-neutral"; 
-            }
+                cardClass += " card-gold-zone"; 
+            } else if (VERY_BAD.includes(cardId)) { cardClass += " card-very-bad"; } 
+            else if (BAD.includes(cardId)) { cardClass += " card-bad"; } 
+            else if (VERY_GOOD.includes(cardId)) { cardClass += " card-very-good"; } 
+            else if (GOOD.includes(cardId)) { cardClass += " card-good"; } 
+            else { cardClass += " card-neutral"; }
 
             const cardDiv = document.createElement('div');
             cardDiv.className = cardClass;
@@ -265,6 +309,15 @@
             cardDiv.innerHTML = `<span class="${labelClass}">${posPart}</span><img src="${IMAGE_PATH}${cardId}${IMAGE_EXT}" crossorigin="anonymous">`;
             cardArea.appendChild(cardDiv);
         });
+
+        // 🌟 แสดงคำพยากรณ์ (เฉพาะแบบไม่ถึง 12 ใบ และมีการพิมพ์ข้อความมา)
+        if (totalCards < 12 && predText !== "") {
+            // แปลงการขึ้นบรรทัดใหม่ (Enter) ให้เป็น <br> สำหรับ HTML
+            predDisplayArea.innerHTML = predText.replace(/\n/g, '<br>');
+            predDisplayArea.style.color = predColor; // ดึงสี HEX มาใช้งาน
+            predDisplayArea.style.display = 'block';
+        }
+
         resultDisplay.scrollIntoView({ behavior: 'smooth' });
     }
 

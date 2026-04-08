@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบสร้างการ์ดนัดหมาย.- หมอโย</title>
+    <title>ระบบสร้างการ์ดนัดหมาย :หมอโย</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -73,6 +73,13 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+        
+        /* จัดเลย์เอาต์ช่องอายุให้อยู่คู่กัน */
+        .age-group {
+            display: flex;
+            gap: 5px;
+        }
+
         button {
             width: 100%;
             padding: 15px;
@@ -175,6 +182,14 @@
             flex: 1;
             color: #222;
         }
+
+        /* 3. ขยายขนาดตัวอักษรเฉพาะชื่อเจ้าชะตา */
+        #out-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #b07d4b; /* เปลี่ยนสีให้กลมกลืนกับหัวการ์ดและเด่นขึ้น */
+        }
+
         .birth-line {
             margin-bottom: 4px;
         }
@@ -193,7 +208,7 @@
         .note-section {
             display: none;
             font-size: 14px;
-            color: #1976d2; /* สีน้ำเงินสบายตา */
+            color: #1976d2; 
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px dashed #ddd;
@@ -270,12 +285,59 @@
         <div class="birth-date-section" id="inp-birth-section">
             <label style="color:var(--primary);">ข้อมูลวันเกิดเจ้าชะตา</label>
             <div class="birth-date-grid">
-                <input type="text" id="inp-b-dayname" placeholder="วัน (เช่น จันทร์)" oninput="updateCard()">
+                
+                <select id="inp-b-dayname" onchange="updateCard()">
+                    <option value="">-- เลือกวัน --</option>
+                    <option value="จันทร์">จันทร์</option>
+                    <option value="อังคาร">อังคาร</option>
+                    <option value="พุธ">พุธ</option>
+                    <option value="พฤหัสบดี">พฤหัสบดี</option>
+                    <option value="ศุกร์">ศุกร์</option>
+                    <option value="เสาร์">เสาร์</option>
+                    <option value="อาทิตย์">อาทิตย์</option>
+                </select>
+
                 <input type="text" id="inp-b-date" placeholder="วันที่ (เช่น 15)" oninput="updateCard()">
-                <input type="text" id="inp-b-month" placeholder="เดือน" oninput="updateCard()">
+                
+                <select id="inp-b-month" onchange="updateCard()">
+                    <option value="">-- เลือกเดือน --</option>
+                    <option value="มกราคม">มกราคม</option>
+                    <option value="กุมภาพันธ์">กุมภาพันธ์</option>
+                    <option value="มีนาคม">มีนาคม</option>
+                    <option value="เมษายน">เมษายน</option>
+                    <option value="พฤษภาคม">พฤษภาคม</option>
+                    <option value="มิถุนายน">มิถุนายน</option>
+                    <option value="กรกฎาคม">กรกฎาคม</option>
+                    <option value="สิงหาคม">สิงหาคม</option>
+                    <option value="กันยายน">กันยายน</option>
+                    <option value="ตุลาคม">ตุลาคม</option>
+                    <option value="พฤศจิกายน">พฤศจิกายน</option>
+                    <option value="ธันวาคม">ธันวาคม</option>
+                </select>
+
                 <input type="text" id="inp-b-year" placeholder="พ.ศ." oninput="updateCard()">
-                <input type="text" id="inp-b-zodiac" placeholder="ปีนักษัตร" oninput="updateCard()">
-                <input type="text" id="inp-b-age" placeholder="อายุ" oninput="updateCard()">
+                
+                <select id="inp-b-zodiac" onchange="updateCard()">
+                    <option value="">-- เลือกปีนักษัตร --</option>
+                    <option value="ชวด">ชวด</option>
+                    <option value="ฉลู">ฉลู</option>
+                    <option value="ขาล">ขาล</option>
+                    <option value="เถาะ">เถาะ</option>
+                    <option value="มะโรง">มะโรง</option>
+                    <option value="มะเส็ง">มะเส็ง</option>
+                    <option value="มะเมีย">มะเมีย</option>
+                    <option value="มะแม">มะแม</option>
+                    <option value="วอก">วอก</option>
+                    <option value="ระกา">ระกา</option>
+                    <option value="จอ">จอ</option>
+                    <option value="กุน">กุน</option>
+                </select>
+                
+                <div class="age-group">
+                    <input type="text" id="inp-b-age-year" placeholder="อายุ (ปี)" oninput="updateCard()" style="width:50%;">
+                    <input type="text" id="inp-b-age-month" placeholder="อายุ (เดือน)" oninput="updateCard()" style="width:50%;">
+                </div>
+
             </div>
         </div>
 
@@ -357,7 +419,7 @@
                             <div class="detail-value">
                                 <div class="birth-line">วัน<span id="ob-dayname">-</span> ที่ <span id="ob-date">-</span></div>
                                 <div class="birth-line">เดือน <span id="ob-month">-</span> พ.ศ. <span id="ob-year">-</span></div>
-                                <div>อายุ <span id="ob-age">-</span> ปี</div>
+                                <div>อายุ <span id="ob-age-year">-</span> ปี <span id="ob-age-month">-</span> เดือน</div>
                             </div>
                         </div>
                         <div class="detail-item" style="margin-top: 12px;">
@@ -456,13 +518,16 @@
             document.getElementById("out-time-end").innerText = timeEnd;
             document.getElementById("out-channel").innerText = channel;
 
-            // วันเกิด
+            // วันเกิด (ดึงค่าจาก Dropdown และ Input ใหม่)
             document.getElementById("ob-dayname").innerText = document.getElementById("inp-b-dayname").value || "-";
             document.getElementById("ob-date").innerText = document.getElementById("inp-b-date").value || "-";
             document.getElementById("ob-month").innerText = document.getElementById("inp-b-month").value || "-";
             document.getElementById("ob-year").innerText = document.getElementById("inp-b-year").value || "-";
             document.getElementById("ob-zodiac").innerText = document.getElementById("inp-b-zodiac").value || "-";
-            document.getElementById("ob-age").innerText = document.getElementById("inp-b-age").value || "-";
+            
+            // แยกค่าอายุปีและเดือน
+            document.getElementById("ob-age-year").innerText = document.getElementById("inp-b-age-year").value || "0";
+            document.getElementById("ob-age-month").innerText = document.getElementById("inp-b-age-month").value || "0";
 
             const noteText = document.getElementById("inp-note").value;
             const noteSection = document.getElementById("out-note-section");
@@ -473,7 +538,7 @@
                 noteSection.style.display = "none";
             }
 
-            // อัปเดตข้อความสำหรับ Copy (เพิ่มชื่อเจ้าชะตาแล้ว)
+            // อัปเดตข้อความสำหรับ Copy
             const copyTemplate = `ลิงค์เข้าดูดวง : สำหรับ ${name}\n${meetingLink}`;
             
             document.getElementById("out-copy-text").value = copyTemplate;

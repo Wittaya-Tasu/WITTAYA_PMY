@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบสร้างการ์ดนัดหมาย :หมอโย</title>
+    <title>ระบบสร้างการ์ดนัดหมาย.- หมอโย</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -74,7 +74,6 @@
             gap: 10px;
         }
         
-        /* จัดเลย์เอาต์ช่องอายุให้อยู่คู่กัน */
         .age-group {
             display: flex;
             gap: 5px;
@@ -183,11 +182,10 @@
             color: #222;
         }
 
-        /* 3. ขยายขนาดตัวอักษรเฉพาะชื่อเจ้าชะตา */
         #out-name {
             font-size: 18px;
             font-weight: 600;
-            color: #b07d4b; /* เปลี่ยนสีให้กลมกลืนกับหัวการ์ดและเด่นขึ้น */
+            color: #b07d4b;
         }
 
         .birth-line {
@@ -204,7 +202,6 @@
             border-top: 1px dashed #ddd;
         }
         
-        /* ปรับสีหมายเหตุเป็นสีน้ำเงิน */
         .note-section {
             display: none;
             font-size: 14px;
@@ -233,7 +230,6 @@
             color: #555;
         }
         
-        /* แจ้งเตือนเมื่อ Copy สำเร็จ */
         #toast {
             visibility: hidden;
             min-width: 250px;
@@ -338,6 +334,8 @@
                     <input type="text" id="inp-b-age-month" placeholder="อายุ (เดือน)" oninput="updateCard()" style="width:50%;">
                 </div>
 
+                <input type="text" id="inp-b-time" placeholder="เวลาเกิด (เช่น 10.30)" oninput="updateCard()" style="grid-column: span 2;">
+
             </div>
         </div>
 
@@ -354,7 +352,35 @@
 
         <div class="form-group">
             <label>วันที่นัดหมาย</label>
-            <input type="text" id="inp-appoint-date" value="วันอังคารที่ 15 เมษายน 2569" oninput="updateCard()">
+            <div class="birth-date-grid">
+                <select id="inp-app-dayname" onchange="updateCard()">
+                    <option value="">-- วัน --</option>
+                    <option value="จันทร์">จันทร์</option>
+                    <option value="อังคาร" selected>อังคาร</option>
+                    <option value="พุธ">พุธ</option>
+                    <option value="พฤหัสบดี">พฤหัสบดี</option>
+                    <option value="ศุกร์">ศุกร์</option>
+                    <option value="เสาร์">เสาร์</option>
+                    <option value="อาทิตย์">อาทิตย์</option>
+                </select>
+                <input type="text" id="inp-app-date" placeholder="วันที่" value="15" oninput="updateCard()">
+                <select id="inp-app-month" onchange="updateCard()">
+                    <option value="">-- เดือน --</option>
+                    <option value="มกราคม">มกราคม</option>
+                    <option value="กุมภาพันธ์">กุมภาพันธ์</option>
+                    <option value="มีนาคม">มีนาคม</option>
+                    <option value="เมษายน" selected>เมษายน</option>
+                    <option value="พฤษภาคม">พฤษภาคม</option>
+                    <option value="มิถุนายน">มิถุนายน</option>
+                    <option value="กรกฎาคม">กรกฎาคม</option>
+                    <option value="สิงหาคม">สิงหาคม</option>
+                    <option value="กันยายน">กันยายน</option>
+                    <option value="ตุลาคม">ตุลาคม</option>
+                    <option value="พฤศจิกายน">พฤศจิกายน</option>
+                    <option value="ธันวาคม">ธันวาคม</option>
+                </select>
+                <input type="text" id="inp-app-year" placeholder="พ.ศ." value="2569" oninput="updateCard()">
+            </div>
         </div>
 
         <div class="form-group">
@@ -417,7 +443,7 @@
                         <div class="detail-item">
                             <div class="detail-label">วันเกิด:</div>
                             <div class="detail-value">
-                                <div class="birth-line">วัน<span id="ob-dayname">-</span> ที่ <span id="ob-date">-</span></div>
+                                <div class="birth-line">วัน<span id="ob-dayname">-</span> ที่ <span id="ob-date">-</span> เวลา <span id="ob-time">-</span> น.</div>
                                 <div class="birth-line">เดือน <span id="ob-month">-</span> พ.ศ. <span id="ob-year">-</span></div>
                                 <div>อายุ <span id="ob-age-year">-</span> ปี <span id="ob-age-month">-</span> เดือน</div>
                             </div>
@@ -432,7 +458,7 @@
 
                     <div class="detail-item" style="margin-top: 15px;">
                         <div class="detail-label">วันนัดดูดวง:</div>
-                        <div class="detail-value" id="out-appoint-date">วันอังคารที่ 15 เมษายน 2569</div>
+                        <div class="detail-value" id="out-appoint-date">-</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">เวลานัด:</div>
@@ -492,7 +518,17 @@
         function updateCard() {
             const name = document.getElementById("inp-name").value || "-";
             const typeVal = document.getElementById("inp-type").value;
-            const date = document.getElementById("inp-appoint-date").value || "-";
+            
+            // ดึงข้อมูลวันที่นัดหมายจาก 4 ช่องมารวมกัน
+            const appDay = document.getElementById("inp-app-dayname").value;
+            const appDate = document.getElementById("inp-app-date").value;
+            const appMonth = document.getElementById("inp-app-month").value;
+            const appYear = document.getElementById("inp-app-year").value;
+            let fullAppointDate = "-";
+            if (appDay || appDate || appMonth || appYear) {
+                fullAppointDate = `วัน${appDay || "-"}ที่ ${appDate || "-"} ${appMonth || "-"} ${appYear || "-"}`;
+            }
+
             const timeStart = document.getElementById("inp-time-start").value || "00:00";
             const timeEnd = document.getElementById("inp-time-end").value || "00:00";
             const channel = document.getElementById("inp-channel").value;
@@ -510,17 +546,18 @@
                 statusEl.className = "detail-value status-pending";
             }
 
-            // อัปเดตหน้าการ์ด
+            // อัปเดตหน้าการ์ดส่วนข้อมูลทั่วไป
             document.getElementById("out-name-greeting").innerText = name;
             document.getElementById("out-name").innerText = name;
-            document.getElementById("out-appoint-date").innerText = date;
+            document.getElementById("out-appoint-date").innerText = fullAppointDate;
             document.getElementById("out-time-start").innerText = timeStart;
             document.getElementById("out-time-end").innerText = timeEnd;
             document.getElementById("out-channel").innerText = channel;
 
-            // วันเกิด (ดึงค่าจาก Dropdown และ Input ใหม่)
+            // วันเกิด และ เวลาเกิด
             document.getElementById("ob-dayname").innerText = document.getElementById("inp-b-dayname").value || "-";
             document.getElementById("ob-date").innerText = document.getElementById("inp-b-date").value || "-";
+            document.getElementById("ob-time").innerText = document.getElementById("inp-b-time").value || "-"; // เวลาเกิด
             document.getElementById("ob-month").innerText = document.getElementById("inp-b-month").value || "-";
             document.getElementById("ob-year").innerText = document.getElementById("inp-b-year").value || "-";
             document.getElementById("ob-zodiac").innerText = document.getElementById("inp-b-zodiac").value || "-";

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แสดงผลรูปภาพไพ่.v2 -หมอวิทยา ธรรมนาย</title>
+    <title>แสดงผลรูปภาพไพ่.v2.1 -หมอวิทยา ธรรมนาย</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@600&display=swap');
@@ -72,7 +72,7 @@
         .card-very-bad { background-color: #b71c1c !important; border-color: #7f0000 !important; }
         .card-very-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
-        /* สีพิเศษสำหรับ ศัตรู และ โรคภัย */
+        /* สีพิเศษ */
         .alert-good { background-color: #616A6B !important; border-color: #4D5656 !important; } 
         .alert-good .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
         .alert-neutral { background-color: #17202A !important; border-color: #000000 !important; } 
@@ -81,10 +81,7 @@
         .alert-bad .pos-label { color: #ffffff !important; border-bottom-color: rgba(255,255,255,0.3) !important; }
 
         /* Golden Zone */
-        .card-gold-zone { 
-            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; 
-            border-color: #aa771c !important; box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4);
-        }
+        .card-gold-zone { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; border-color: #aa771c !important; box-shadow: 0 4px 15px rgba(170, 119, 28, 0.4); }
         .card-gold-zone .pos-label { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); border-bottom-color: rgba(255,255,255,0.4) !important; }
 
         .custom-layout-3to6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px 25px; max-width: 850px; margin: 0 auto; position: relative; z-index: 1; }
@@ -100,16 +97,28 @@
             margin-top: 35px;
             font-family: 'Sarabun', sans-serif;
             font-weight: 700; /* ตัวหนา */
-            font-size: 1.3em;
+            /* ขนาดและสีจะถูกควบคุมผ่าน JavaScript ตามที่คุณหมอตั้งค่า */
             line-height: 1.6;
             text-align: left;
             padding: 0 15px;
-            display: none; /* ซ่อนไว้ก่อน จะแสดงเฉพาะมีข้อมูล 3 ใบ */
+            display: none;
         }
 
         /* กล่องคุมโซนกรอกข้อมูล */
         .input-zone { background: #fafafa; padding: 20px; border-radius: 15px; border: 1px solid #e0e0e0; margin-bottom: 20px; text-align: left; }
         .input-zone label { font-weight: bold; color: #2c3e50; display: block; margin-bottom: 5px; font-family: 'Kanit', sans-serif; }
+
+        /* 🌟 ปุ่มสีด่วน (Quick Color Buttons) */
+        .color-preset {
+            width: 32px; height: 32px; border-radius: 5px; cursor: pointer;
+            border: 2px solid transparent; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .color-preset:hover { transform: scale(1.1); border-color: #34495e; }
+        .color-preset:active { transform: scale(0.95); }
+        .bg-black { background-color: #2c3e50; }
+        .bg-red { background-color: #c0392b; }
+        .bg-blue { background-color: #2980b9; }
+        .bg-green { background-color: #27ae60; }
 
         @media print {
             .no-print, .btn-group, .input-zone { display: none !important; }
@@ -131,9 +140,18 @@
             <label style="color: #8e44ad; margin-top: 10px;">2. พิมพ์คำพยากรณ์ (เฉพาะแบบ 3-6 ใบ):</label>
             <textarea id="input-prediction" placeholder="ก๊อปปี้คำพยากรณ์จาก AI มาวางที่นี่..." style="height: 120px;"></textarea>
             
-            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                <label style="color: #d35400; margin: 0;">🎨 สีตัวอักษรคำทำนาย (HEX):</label>
-                <input type="color" id="input-color" value="#2c3e50" style="cursor: pointer; width: 50px; height: 35px; border: none; border-radius: 5px; padding: 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 5px; flex-wrap: wrap;">
+                <label style="color: #d35400; margin: 0;">🎨 สีอักษร:</label>
+                <input type="color" id="input-color" value="#2c3e50" style="cursor: pointer; width: 45px; height: 35px; border: none; padding: 0; border-radius: 5px;">
+                
+                <div class="color-preset bg-black" onclick="setQuickColor('#2c3e50')" title="สีดำ (ค่าเริ่มต้น)"></div>
+                <div class="color-preset bg-red" onclick="setQuickColor('#c0392b')" title="สีแดง"></div>
+                <div class="color-preset bg-blue" onclick="setQuickColor('#2980b9')" title="สีน้ำเงิน"></div>
+                <div class="color-preset bg-green" onclick="setQuickColor('#27ae60')" title="สีเขียว"></div>
+
+                <label style="color: #27ae60; margin: 0 0 0 15px;">📏 ขนาดอักษร:</label>
+                <input type="number" id="input-fontsize" value="22" min="14" max="40" style="width: 60px; padding: 5px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; text-align: center; font-family: 'Kanit', sans-serif;"> 
+                <span style="color:#7f8c8d; font-weight: bold;">px</span>
             </div>
         </div>
         
@@ -180,10 +198,16 @@
     const WEALTH_CARDS = ["410", "411", "415", "416", "424", "429"];
     const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง", "ลาภยศ", "ความสุข", "พื้นดวง", "สรุปดวงชะตา", "สรุป"];
 
+    // 🌟 ฟังก์ชันสำหรับเปลี่ยนสีเมื่อกดปุ่มสีด่วน
+    function setQuickColor(hexCode) {
+        document.getElementById('input-color').value = hexCode;
+    }
+
     function processCards() {
         const inputText = document.getElementById('input-text').value;
         const predText = document.getElementById('input-prediction').value.trim();
-        const predColor = document.getElementById('input-color').value; // ดึงค่าสี HEX
+        const predColor = document.getElementById('input-color').value; 
+        const predFontSize = document.getElementById('input-fontsize').value; // ดึงขนาดตัวอักษร
         
         const resultDisplay = document.getElementById('result-display');
         const displayQuestion = document.getElementById('display-question');
@@ -310,11 +334,11 @@
             cardArea.appendChild(cardDiv);
         });
 
-        // 🌟 แสดงคำพยากรณ์ (เฉพาะแบบไม่ถึง 12 ใบ และมีการพิมพ์ข้อความมา)
+        // 🌟 แสดงคำพยากรณ์ พร้อมตั้งค่าสีและขนาดตัวอักษร
         if (totalCards < 12 && predText !== "") {
-            // แปลงการขึ้นบรรทัดใหม่ (Enter) ให้เป็น <br> สำหรับ HTML
             predDisplayArea.innerHTML = predText.replace(/\n/g, '<br>');
-            predDisplayArea.style.color = predColor; // ดึงสี HEX มาใช้งาน
+            predDisplayArea.style.color = predColor; // นำสีไปใช้งาน
+            predDisplayArea.style.fontSize = predFontSize + "px"; // นำขนาดไปใช้งาน
             predDisplayArea.style.display = 'block';
         }
 

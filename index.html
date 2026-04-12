@@ -34,10 +34,25 @@
         }
 
         .user-info-box {
-            background: #fff; padding: 20px; border-radius: 12px;
+            background: #fff; padding: 10px; border-radius: 12px;
             border: 2px solid #e0e0e0; margin-bottom: 20px; text-align: left;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
+        
+        /* 🌟 สไตล์สำหรับปุ่มเปิด-ปิดกล่องข้อมูล */
+        .toggle-header {
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center; 
+            background: #f4f7f6; padding: 15px 20px; border-radius: 8px; transition: background 0.3s;
+        }
+        .toggle-header:hover { background: #e8ecef; }
+        
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #user-info-content {
+            padding: 10px 20px 20px 20px;
+            animation: fadeInDown 0.3s ease-out;
+        }
+
         .user-info-box label { font-weight: bold; color: #2c3e50; display: block; margin-top: 15px; margin-bottom: 5px; }
         .user-info-box textarea {
             width: 100%; height: 80px; padding: 10px; border-radius: 8px;
@@ -164,12 +179,20 @@
     <div id="card-selection-area" style="display:none;">
         
         <div class="user-info-box" id="user-info-12" style="display:none;">
-            <p style="color: #2980b9; font-weight: bold; font-size: 1.2em; margin-top: 0; margin-bottom: 5px;">📝 ข้อมูลเพิ่มเติม (เพื่อความแม่นยำในการทำนาย)</p>
-            <p style="color: #7f8c8d; font-size: 0.9em; margin-top: 0;"><i>ท่านสามารถพิมพ์เป็นข้อมูลไว้ หรือจะเว้นว่างไว้ก็ได้ครับ</i></p>
-            <label>📌 สถานการณ์ที่กำลังเผชิญอยู่ / ปัญหาอุปสรรคที่ไม่สบายใจ :</label>
-            <textarea id="user-context" placeholder="เล่าเรื่องราวคร่าวๆ เช่น ช่วงนี้เครียดเรื่องงานหนักมาก, กังวลเรื่องหนี้สิน..."></textarea>
-            <label>❓ เรื่องไหนอยากรู้เป็นพิเศษ :</label>
-            <textarea id="user-question-12" placeholder="เช่น เรื่องงาน / เรื่องเงิน / ความรัก / ครอบครัว เป็นต้น..."></textarea>
+            <div class="toggle-header" onclick="toggleUserInfo()">
+                <div>
+                    <p style="color: #2980b9; font-weight: bold; font-size: 1.2em; margin: 0; font-family: 'Kanit', sans-serif;">📝 ระบุข้อมูลเพื่อความแม่นยำ (ไม่บังคับ)</p>
+                    <p style="color: #7f8c8d; font-size: 0.9em; margin-top: 5px; margin-bottom: 0;"><i>คลิกเพื่อเปิด/ปิด หากต้องการพิมพ์สถานการณ์หรือคำถาม</i></p>
+                </div>
+                <span id="toggle-icon" style="font-size: 1.5em; color: #2980b9;">▼</span>
+            </div>
+
+            <div id="user-info-content" style="display: none;">
+                <label>📌 สถานการณ์ที่กำลังเผชิญอยู่ / ปัญหาอุปสรรคที่ไม่สบายใจ :</label>
+                <textarea id="user-context" placeholder="เล่าเรื่องราวคร่าวๆ เช่น ช่วงนี้เครียดเรื่องงานหนักมาก, กังวลเรื่องหนี้สิน..."></textarea>
+                <label>❓ เรื่องไหนอยากรู้เป็นพิเศษ :</label>
+                <textarea id="user-question-12" placeholder="เช่น เรื่องงาน / เรื่องเงิน / ความรัก / ครอบครัว เป็นต้น..."></textarea>
+            </div>
         </div>
 
         <div id="question-block" style="display:none;">
@@ -214,6 +237,20 @@
     let deck = Object.keys(CARD_DATA).map(Number);
     let isNumbersVisible = true; 
 
+    // 🌟 ฟังก์ชันสลับการเปิด/ปิดกล่องข้อมูล
+    function toggleUserInfo() {
+        const content = document.getElementById('user-info-content');
+        const icon = document.getElementById('toggle-icon');
+        
+        if (content.style.display === 'none' || content.style.display === '') {
+            content.style.display = 'block';
+            icon.innerText = '▲';
+        } else {
+            content.style.display = 'none';
+            icon.innerText = '▼';
+        }
+    }
+
     function startFlow(mode) { 
         currentMode = mode; maxAllowed = mode; 
         document.getElementById('prayer-overlay').style.display = 'flex'; 
@@ -227,6 +264,11 @@
         
         if (currentMode === 12) {
             document.getElementById('user-info-12').style.display = 'block';
+            
+            // รีเซ็ตให้กล่องข้อมูล "พับเก็บ" เสมอเมื่อเริ่มทำนายใหม่
+            document.getElementById('user-info-content').style.display = 'none';
+            document.getElementById('toggle-icon').innerText = '▼';
+            
             document.getElementById('question-block').style.display = 'none';
             document.getElementById('status-msg').innerText = "👉 ตั้งจิตอธิษฐาน แล้วคลิกเลือกไพ่ให้ครบ 12 ใบครับ";
         } else {
@@ -258,6 +300,11 @@
         document.getElementById('user-context').value = "";
         document.getElementById('user-question-12').value = "";
         document.getElementById('user-question-3').value = "";
+        
+        // รีเซ็ตการพับกล่องด้วย
+        document.getElementById('user-info-content').style.display = 'none';
+        document.getElementById('toggle-icon').innerText = '▼';
+        
         currentMode = 12;
     }
 
@@ -311,12 +358,11 @@
             element.classList.add('selected');
             element.innerHTML = `${selectedCards.length}`;
             
-            // 🔥 ตรวจสอบให้แจ้งเตือน ป๊อปอัป *เฉพาะ* เมื่อหยิบใบที่ 3, 4 หรือ 5 แล้วได้ไพ่พิเศษเท่านั้น
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length <= 5 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
                 document.getElementById('extra-card-popup').style.display = 'flex';
                 document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์เลือกไพ่เพิ่ม (ต้องหยิบให้ครบ ${maxAllowed} ใบ)`;
-                return; // หยุดทำงานตรงนี้ เพื่อให้เจ้าชะตากดรับทราบก่อน ไม่ข้ามไปสรุปผล
+                return;
             }
 
             if (selectedCards.length === maxAllowed) showResults();
@@ -341,7 +387,6 @@
                 cardDiv.innerHTML = `${selectedCards.length}`;
             }
 
-            // 🔥 ลอจิกเดียวกันสำหรับระบบสุ่ม
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length <= 5 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
             }

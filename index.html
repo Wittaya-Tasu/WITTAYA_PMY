@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หมอวิทยา ธรรมนาย: เลือกรหัสและไพ่ v2</title>
+    <title>หมอวิทยา.ธรรมนาย: เลือกรหัสและไพ่</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
 
@@ -442,43 +442,69 @@
     // 🌟 ระบบบันทึกข้อมูลลง Google Sheet 🌟
     // ==========================================
     async function saveDataToSheet() {
-        let typeLabel = (currentMode === 12) ? "12 ใบ" : "3 ใบ";
-        let questionData = "";
-        
-        if (currentMode === 12) {
-            let ctx = document.getElementById('user-context')?.value.trim() || "";
-            let q12 = document.getElementById('user-question-12')?.value.trim() || "";
-            questionData = `สถานการณ์: ${ctx} | คำถาม: ${q12 || 'วิเคราะห์พื้นดวงชะตา'}`;
-        } else {
-            questionData = document.getElementById('user-question-3')?.value.trim() || "";
-        }
-
-        // ดึงเฉพาะรหัสไพ่ เอามาคั่นด้วยลูกน้ำ
-        let cardIds = selectedCards.join(", ");
-
-        const payload = {
-            action: "saveResult",
-            username: loginUserGlobal, 
-            type: typeLabel,
-            question: questionData,
-            cards: cardIds
-        };
-
-        try {
-            // สั่งให้บันทึกแบบทำงานอยู่หลังบ้านเงียบๆ (ไม่ต้องโชว์ข้อความ Loading ให้ลูกค้าตกใจ)
-            const response = await fetch(SCRIPT_URL, {
-                method: "POST",
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-            if(result.success) {
-                console.log("บันทึกข้อมูลลง Sheet เรียบร้อยแล้วครับคุณหมอ");
-            }
-        } catch (error) {
-            console.error("Error saving to sheet:", error);
-        }
+    let typeLabel = (currentMode === 12) ? "12 ใบ" : "3 ใบ";
+    let questionData = "";
+    
+    // --- 1. เตรียมข้อมูลพื้นฐานสำหรับคอลัมน์ปกติ ---
+    if (currentMode === 12) {
+        let ctx = document.getElementById('user-context')?.value.trim() || "";
+        let q12 = document.getElementById('user-question-12')?.value.trim() || "";
+        questionData = `สถานการณ์: ${ctx} | คำถาม: ${q12 || 'วิเคราะห์พื้นดวงชะตา'}`;
+    } else {
+        questionData = document.getElementById('user-question-3')?.value.trim() || "";
     }
+
+    // --- 2. 🌟 สร้างข้อความแบบ Pattern เต็ม (Full Pattern) สำหรับคอลัมน์สุดท้าย 🌟 ---
+    let fullPattern = `🔮 ผลการเลือกไพ่พรหมญาณ\n🔮 รูปแบบ : แบบ ${currentMode} ใบ\n--------------------------\n`;
+    
+    if (currentMode === 12) {
+        const ctxText = document.getElementById('user-context').value.trim();
+        const q12Text = document.getElementById('user-question-12').value.trim();
+        if (ctxText || q12Text) {
+            fullPattern += `📝 ข้อมูลจากเจ้าชะตา:\n`;
+            if (ctxText) fullPattern += `สถานการณ์: ${ctxText}\n`;
+            if (q12Text) fullPattern += `❓ คำถาม: ${q12Text}\n`;
+        } else {
+            fullPattern += `❓ คำถาม: วิเคราะห์พื้นดวงชะตา\n`;
+        }
+    } else {
+        const q3Text = document.getElementById('user-question-3').value.trim();
+        fullPattern += `❓ คำถาม: ${q3Text}\n`;
+    }
+    
+    fullPattern += `--------------------------\n`;
+    
+    const posNames = (currentMode === 3) ? POS_3 : POS_12;
+    selectedCards.forEach((id, index) => { 
+        fullPattern += `${index + 1}. ${posNames[index] || 'ขยายความ'}: ${id} ${CARD_DATA[id]}\n`; 
+    });
+
+    // --- 3. ส่งข้อมูลไปบันทึก ---
+    let cardIds = selectedCards.join(", ");
+
+    const payload = {
+        action: "saveResult",
+        username: loginUserGlobal, 
+        type: typeLabel,
+        question: questionData,
+        cards: cardIds,
+        fullPattern: fullPattern // ส่งข้อความรูปแบบเต็มไปด้วย
+    };
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if(result.success) {
+            console.log("บันทึกข้อมูลเรียบร้อยแล้ว");
+        }
+    } catch (error) {
+        console.error("Error saving to sheet:", error);
+    }
+}
 
 </script>
 </body>

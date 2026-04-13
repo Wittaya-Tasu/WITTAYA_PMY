@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หมอวิทยา ธรรมนาย: เลือกรหัสและไพ่</title>
+    <title>หมอวิทยา ธรรมนาย: เลือกรหัสและไพ่ v2</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kanit:wght@500;600&display=swap');
 
@@ -199,13 +199,14 @@
     // ==========================================
     // 🔗 1. ใส่ URL ของ Google Apps Script ของคุณหมอที่นี่ 🔗
     // ==========================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnXbAQAaoUiUXol9aXaFYLwu_Gx4gpIkGTcs6FOZyu5xgublMK2Sc8GpZModH5o6jA/exec'; 
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwksf1Xka-AES0ym0TGdQbzLyHeEFN-RhSxG3201rYFppvb7fvRCBjjD3CPGYonUPA/exec'; 
 
     // ==========================================
     // 🔐 ระบบ Login & Admin API
     // ==========================================
     let currentUser = "";
     let currentPass = "";
+    let loginUserGlobal = ""; // 🌟 เพิ่มตัวแปรนี้เพื่อเก็บชื่อ User ส่งไปให้ Google Sheet ตอนเซฟผล
 
     async function callAPI(payload) {
         document.getElementById('loading-overlay').style.display = 'flex';
@@ -236,6 +237,8 @@
         
         if(res.success) {
             document.getElementById('login-view').style.display = 'none';
+            loginUserGlobal = u; // 🌟 เก็บ Username ของคนที่ล็อคอินสำเร็จไว้
+            
             if(res.role === 'admin') {
                 currentUser = u; currentPass = p;
                 document.getElementById('admin-view').style.display = 'block';
@@ -264,7 +267,7 @@
             msg.style.color = "#27ae60";
             msg.innerText = `✅ สร้างรหัสสำเร็จ! User: ${res.username} / Pass: ${res.password} (คัดลอกส่งให้ลูกค้าได้เลย)`;
             document.getElementById('custom-u').value = ""; document.getElementById('custom-p').value = "";
-            fetchTokenList(); // อัปเดตตาราง
+            fetchTokenList(); 
         } else {
             msg.style.color = "#e74c3c";
             msg.innerText = `❌ ผิดพลาด: ${res.message}`;
@@ -347,7 +350,6 @@
 
     function closeExtraPopup() { document.getElementById('extra-card-popup').style.display = 'none'; }
     
-    // (ฟังก์ชันไพ่ที่เหลือยังคงเหมือนเดิมทั้งหมดเพื่อให้ทำงานได้ 100% ผมย่อไว้เพื่อไม่ให้ยาวเกินไป แต่ในโค้ดจริงใช้งานได้ปกติครับ)
     function goHome() { location.reload(); }
     
     function toggleNumbers() {
@@ -404,8 +406,15 @@
         selectedCards.forEach((id, index) => {
             listDiv.innerHTML += `<div class="result-item"><span class="pos-title">${index + 1}. ${posNames[index] || 'ขยายความ'}:</span><span class="card-highlight">${id} ${CARD_DATA[id]}</span></div>`;
         });
+        
         resArea.scrollIntoView({ behavior: 'smooth' });
-        if (!document.getElementById('status-msg').innerHTML.includes('ระบบพบไพ่พิเศษ')) { document.getElementById('status-msg').innerText = "✅ เลือกไพ่เสร็จสมบูรณ์ เลื่อนลงเพื่อคัดลอกผลลัพธ์ครับ"; }
+        
+        // 🌟 เรียกใช้ฟังก์ชันบันทึกข้อมูลอัตโนมัติทันที 🌟
+        saveDataToSheet();
+
+        if (!document.getElementById('status-msg').innerHTML.includes('ระบบพบไพ่พิเศษ')) { 
+            document.getElementById('status-msg').innerText = "✅ บันทึกข้อมูลและเลือกไพ่เสร็จสมบูรณ์ครับ"; 
+        }
     }
 
     function copyResult() {
@@ -428,6 +437,49 @@
             setTimeout(() => { document.getElementById('copy-status').innerText = ""; }, 4000);
         });
     }
+
+    // ==========================================
+    // 🌟 ระบบบันทึกข้อมูลลง Google Sheet 🌟
+    // ==========================================
+    async function saveDataToSheet() {
+        let typeLabel = (currentMode === 12) ? "12 ใบ" : "3 ใบ";
+        let questionData = "";
+        
+        if (currentMode === 12) {
+            let ctx = document.getElementById('user-context')?.value.trim() || "";
+            let q12 = document.getElementById('user-question-12')?.value.trim() || "";
+            questionData = `สถานการณ์: ${ctx} | คำถาม: ${q12 || 'วิเคราะห์พื้นดวงชะตา'}`;
+        } else {
+            questionData = document.getElementById('user-question-3')?.value.trim() || "";
+        }
+
+        // ดึงเฉพาะรหัสไพ่ เอามาคั่นด้วยลูกน้ำ
+        let cardIds = selectedCards.join(", ");
+
+        const payload = {
+            action: "saveResult",
+            username: loginUserGlobal, 
+            type: typeLabel,
+            question: questionData,
+            cards: cardIds
+        };
+
+        try {
+            // สั่งให้บันทึกแบบทำงานอยู่หลังบ้านเงียบๆ (ไม่ต้องโชว์ข้อความ Loading ให้ลูกค้าตกใจ)
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if(result.success) {
+                console.log("บันทึกข้อมูลลง Sheet เรียบร้อยแล้วครับคุณหมอ");
+            }
+        } catch (error) {
+            console.error("Error saving to sheet:", error);
+        }
+    }
+
 </script>
 </body>
 </html>

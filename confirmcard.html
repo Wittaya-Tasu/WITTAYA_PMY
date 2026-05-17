@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบสร้างการ์ดนัดหมาย.- หมอโย</title>
+    <title>การ์ดนัดหมาย</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -73,12 +73,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-        
-        .age-group {
-            display: flex;
-            gap: 5px;
-        }
-
         button {
             width: 100%;
             padding: 15px;
@@ -280,39 +274,14 @@
 
         <div class="birth-date-section" id="inp-birth-section">
             <label style="color:var(--primary);">ข้อมูลวันเกิดเจ้าชะตา</label>
+            
+            <div class="form-group">
+                <!-- ปฏิทินวันเกิดแบบเลือกง่ายๆ (ระบบคำนวณอายุให้อัตโนมัติ) -->
+                <input type="date" id="inp-b-fulldate" onchange="updateCard()">
+            </div>
+
             <div class="birth-date-grid">
-                
-                <select id="inp-b-dayname" onchange="updateCard()">
-                    <option value="">-- เลือกวัน --</option>
-                    <option value="จันทร์">จันทร์</option>
-                    <option value="อังคาร">อังคาร</option>
-                    <option value="พุธ">พุธ</option>
-                    <option value="พฤหัสบดี">พฤหัสบดี</option>
-                    <option value="ศุกร์">ศุกร์</option>
-                    <option value="เสาร์">เสาร์</option>
-                    <option value="อาทิตย์">อาทิตย์</option>
-                </select>
-
-                <input type="text" id="inp-b-date" placeholder="วันที่ (เช่น 15)" oninput="updateCard()">
-                
-                <select id="inp-b-month" onchange="updateCard()">
-                    <option value="">-- เลือกเดือน --</option>
-                    <option value="มกราคม">มกราคม</option>
-                    <option value="กุมภาพันธ์">กุมภาพันธ์</option>
-                    <option value="มีนาคม">มีนาคม</option>
-                    <option value="เมษายน">เมษายน</option>
-                    <option value="พฤษภาคม">พฤษภาคม</option>
-                    <option value="มิถุนายน">มิถุนายน</option>
-                    <option value="กรกฎาคม">กรกฎาคม</option>
-                    <option value="สิงหาคม">สิงหาคม</option>
-                    <option value="กันยายน">กันยายน</option>
-                    <option value="ตุลาคม">ตุลาคม</option>
-                    <option value="พฤศจิกายน">พฤศจิกายน</option>
-                    <option value="ธันวาคม">ธันวาคม</option>
-                </select>
-
-                <input type="text" id="inp-b-year" placeholder="พ.ศ." oninput="updateCard()">
-                
+                <!-- ปีนักษัตรยังให้เลือกเองได้ตามเดิม -->
                 <select id="inp-b-zodiac" onchange="updateCard()">
                     <option value="">-- เลือกปีนักษัตร --</option>
                     <option value="ชวด">ชวด</option>
@@ -329,58 +298,28 @@
                     <option value="กุน">กุน</option>
                 </select>
                 
-                <div class="age-group">
-                    <input type="text" id="inp-b-age-year" placeholder="อายุ (ปี)" oninput="updateCard()" style="width:50%;">
-                    <input type="text" id="inp-b-age-month" placeholder="อายุ (เดือน)" oninput="updateCard()" style="width:50%;">
-                </div>
-
-                <input type="text" id="inp-b-time" placeholder="เวลาเกิด (เช่น 10.30)" oninput="updateCard()" style="grid-column: span 2;">
-
+                <!-- ช่องเวลาเกิด ให้พิมพ์เองเผื่อกรณี "ไม่ทราบเวลา" -->
+                <input type="text" id="inp-b-time" placeholder="เวลาเกิด (เช่น 10.30)" oninput="updateCard()">
             </div>
         </div>
 
         <div class="form-group birth-date-grid">
             <div>
                 <label>เวลาเริ่ม</label>
-                <input type="time" id="inp-time-start" value="10:00" oninput="updateCard()">
+                <!-- เมื่อเวลาเริ่มเปลี่ยน ให้ไปคำนวณเวลาจบอัตโนมัติ -->
+                <input type="time" id="inp-time-start" value="10:00" oninput="calculateEndTime()">
             </div>
             <div>
-                <label>เวลาจบ</label>
+                <label>เวลาจบ (คำนวณออโต้ หรือแก้เองได้)</label>
+                <!-- เวลาจบให้แก้ได้เหมือนเดิม -->
                 <input type="time" id="inp-time-end" value="11:00" oninput="updateCard()">
             </div>
         </div>
 
         <div class="form-group">
             <label>วันที่นัดหมาย</label>
-            <div class="birth-date-grid">
-                <select id="inp-app-dayname" onchange="updateCard()">
-                    <option value="">-- วัน --</option>
-                    <option value="จันทร์">จันทร์</option>
-                    <option value="อังคาร" selected>อังคาร</option>
-                    <option value="พุธ">พุธ</option>
-                    <option value="พฤหัสบดี">พฤหัสบดี</option>
-                    <option value="ศุกร์">ศุกร์</option>
-                    <option value="เสาร์">เสาร์</option>
-                    <option value="อาทิตย์">อาทิตย์</option>
-                </select>
-                <input type="text" id="inp-app-date" placeholder="วันที่" value="15" oninput="updateCard()">
-                <select id="inp-app-month" onchange="updateCard()">
-                    <option value="">-- เดือน --</option>
-                    <option value="มกราคม">มกราคม</option>
-                    <option value="กุมภาพันธ์">กุมภาพันธ์</option>
-                    <option value="มีนาคม">มีนาคม</option>
-                    <option value="เมษายน" selected>เมษายน</option>
-                    <option value="พฤษภาคม">พฤษภาคม</option>
-                    <option value="มิถุนายน">มิถุนายน</option>
-                    <option value="กรกฎาคม">กรกฎาคม</option>
-                    <option value="สิงหาคม">สิงหาคม</option>
-                    <option value="กันยายน">กันยายน</option>
-                    <option value="ตุลาคม">ตุลาคม</option>
-                    <option value="พฤศจิกายน">พฤศจิกายน</option>
-                    <option value="ธันวาคม">ธันวาคม</option>
-                </select>
-                <input type="text" id="inp-app-year" placeholder="พ.ศ." value="2569" oninput="updateCard()">
-            </div>
+            <!-- เปลี่ยนวันที่นัดเป็นปฏิทินช่องเดียว -->
+            <input type="date" id="inp-appoint-fulldate" onchange="updateCard()">
         </div>
 
         <div class="form-group">
@@ -498,6 +437,9 @@
             "3": { text: "แบบที่ 3 : แบบละเอียด", price: "1,999" }
         };
 
+        const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+        const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
         function handleTypeChange() {
             const typeVal = document.getElementById("inp-type").value;
             const birthSectionInp = document.getElementById("inp-birth-section");
@@ -512,23 +454,39 @@
                 birthSectionInp.style.display = "none";
                 birthSectionOut.style.display = "none";
             }
+            
+            // เมื่อเปลี่ยนรูปแบบการดู ให้คำนวณเวลาจบใหม่ด้วย
+            calculateEndTime(); 
+        }
+
+        function calculateEndTime() {
+            const startVal = document.getElementById("inp-time-start").value;
+            const typeVal = document.getElementById("inp-type").value;
+            
+            if (startVal) {
+                let [hours, minutes] = startVal.split(":").map(Number);
+                
+                // บวกเวลาตามรูปแบบการดูดวง
+                if (typeVal === "1" || typeVal === "2") {
+                    hours += 1; // บวก 1 ชั่วโมง
+                } else if (typeVal === "3") {
+                    hours += 2; // บวก 2 ชั่วโมง
+                }
+                
+                // ป้องกันกรณีเลยเที่ยงคืน (เกิน 24.00)
+                hours = hours % 24;
+                
+                const formattedHours = hours.toString().padStart(2, '0');
+                const formattedMinutes = minutes.toString().padStart(2, '0');
+                
+                document.getElementById("inp-time-end").value = `${formattedHours}:${formattedMinutes}`;
+            }
+            // อัปเดตหน้าการ์ดหลังจากคำนวณเสร็จ
             updateCard();
         }
 
         function updateCard() {
             const name = document.getElementById("inp-name").value || "-";
-            const typeVal = document.getElementById("inp-type").value;
-            
-            // ดึงข้อมูลวันที่นัดหมายจาก 4 ช่องมารวมกัน
-            const appDay = document.getElementById("inp-app-dayname").value;
-            const appDate = document.getElementById("inp-app-date").value;
-            const appMonth = document.getElementById("inp-app-month").value;
-            const appYear = document.getElementById("inp-app-year").value;
-            let fullAppointDate = "-";
-            if (appDay || appDate || appMonth || appYear) {
-                fullAppointDate = `วัน${appDay || "-"}ที่ ${appDate || "-"} ${appMonth || "-"} ${appYear || "-"}`;
-            }
-
             const timeStart = document.getElementById("inp-time-start").value || "00:00";
             const timeEnd = document.getElementById("inp-time-end").value || "00:00";
             const channel = document.getElementById("inp-channel").value;
@@ -546,6 +504,14 @@
                 statusEl.className = "detail-value status-pending";
             }
 
+            // แปลงปฏิทินวันนัดหมายเป็นภาษาไทย
+            const appVal = document.getElementById("inp-appoint-fulldate").value;
+            let fullAppointDate = "-";
+            if (appVal) {
+                const appDate = new Date(appVal);
+                fullAppointDate = `วัน${thaiDays[appDate.getDay()]}ที่ ${appDate.getDate()} ${thaiMonths[appDate.getMonth()]} ${appDate.getFullYear() + 543}`;
+            }
+
             // อัปเดตหน้าการ์ดส่วนข้อมูลทั่วไป
             document.getElementById("out-name-greeting").innerText = name;
             document.getElementById("out-name").innerText = name;
@@ -554,17 +520,44 @@
             document.getElementById("out-time-end").innerText = timeEnd;
             document.getElementById("out-channel").innerText = channel;
 
-            // วันเกิด และ เวลาเกิด
-            document.getElementById("ob-dayname").innerText = document.getElementById("inp-b-dayname").value || "-";
-            document.getElementById("ob-date").innerText = document.getElementById("inp-b-date").value || "-";
-            document.getElementById("ob-time").innerText = document.getElementById("inp-b-time").value || "-"; // เวลาเกิด
-            document.getElementById("ob-month").innerText = document.getElementById("inp-b-month").value || "-";
-            document.getElementById("ob-year").innerText = document.getElementById("inp-b-year").value || "-";
+            // การจัดการปฏิทินวันเกิดและการคำนวณอายุ
+            const dobVal = document.getElementById("inp-b-fulldate").value;
+            if (dobVal) {
+                const dob = new Date(dobVal);
+                document.getElementById("ob-dayname").innerText = thaiDays[dob.getDay()];
+                document.getElementById("ob-date").innerText = dob.getDate();
+                document.getElementById("ob-month").innerText = thaiMonths[dob.getMonth()];
+                document.getElementById("ob-year").innerText = dob.getFullYear() + 543;
+
+                // คำนวณอายุอัตโนมัติ
+                const today = new Date();
+                let ageYear = today.getFullYear() - dob.getFullYear();
+                let ageMonth = today.getMonth() - dob.getMonth();
+
+                if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < dob.getDate())) {
+                    ageYear--;
+                    ageMonth += 12;
+                }
+                if (today.getDate() < dob.getDate()) {
+                    ageMonth--;
+                    if(ageMonth < 0) {
+                        ageMonth = 11;
+                    }
+                }
+                document.getElementById("ob-age-year").innerText = ageYear;
+                document.getElementById("ob-age-month").innerText = ageMonth;
+            } else {
+                document.getElementById("ob-dayname").innerText = "-";
+                document.getElementById("ob-date").innerText = "-";
+                document.getElementById("ob-month").innerText = "-";
+                document.getElementById("ob-year").innerText = "-";
+                document.getElementById("ob-age-year").innerText = "-";
+                document.getElementById("ob-age-month").innerText = "-";
+            }
+
+            // เวลาเกิด และ ปีนักษัตร
+            document.getElementById("ob-time").innerText = document.getElementById("inp-b-time").value || "-";
             document.getElementById("ob-zodiac").innerText = document.getElementById("inp-b-zodiac").value || "-";
-            
-            // แยกค่าอายุปีและเดือน
-            document.getElementById("ob-age-year").innerText = document.getElementById("inp-b-age-year").value || "0";
-            document.getElementById("ob-age-month").innerText = document.getElementById("inp-b-age-month").value || "0";
 
             const noteText = document.getElementById("inp-note").value;
             const noteSection = document.getElementById("out-note-section");
@@ -577,7 +570,6 @@
 
             // อัปเดตข้อความสำหรับ Copy
             const copyTemplate = `ลิงค์เข้าดูดวง : สำหรับ ${name}\n${meetingLink}`;
-            
             document.getElementById("out-copy-text").value = copyTemplate;
         }
 
@@ -605,6 +597,8 @@
             });
         }
 
+        // เซ็ตค่าเริ่มต้นตอนโหลดหน้าเว็บ
+        document.getElementById("inp-appoint-fulldate").valueAsDate = new Date(); // ให้ปฏิทินวันนัดหมายโชว์เป็นวันนี้เป็นค่าเริ่มต้น
         handleTypeChange();
     </script>
 </body>

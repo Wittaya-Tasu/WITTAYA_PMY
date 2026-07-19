@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หมอวิทยา ธรรมนาย</title>
+    <title>.หมอวิทยา ธรรมนาย.</title>
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
@@ -99,16 +99,20 @@
         .user-context-box p { margin: 8px 0; color: #34495e; }
 
         /* --- สไตล์ส่วนไพ่ และ ไฮไลท์ --- */
+        .card-area-wrapper { position: relative; width: 100%; margin-top: 10px; }
         .card-item { background: #fff; border-radius: 10px; padding: 8px; border: 1px solid #eee; text-align: center; transition: opacity 0.4s ease, filter 0.4s ease; position: relative; }
         .card-item img { width: 100%; border-radius: 5px; display: block; }
         .pos-label { display: block; font-weight: bold; font-size: 0.85em; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
         
         .card-item.faded { opacity: 0.3; filter: grayscale(40%); }
-        .link-badge { position: absolute; top: -10px; right: -10px; background: #f1c40f; color: #333; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 10; display: none; font-family: 'Kanit', sans-serif; border: 2px solid #fff; }
-        .card-item.linked .link-badge { display: flex; }
-
-        /* --- ส่วนเครื่องมือปุ่มกดไฮไลท์ มุมบนซ้าย --- */
-        .filter-controls { position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 50; text-align: left; }
+        
+        /* การแสดง Badge 🔗 */
+        .link-badge { position: absolute; top: -10px; right: -10px; background: #f1c40f; color: #333; width: 28px; height: 28px; border-radius: 50%; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 10; display: none; font-family: 'Kanit', sans-serif; border: 2px solid #fff; transition: 0.2s ease; }
+        /* แสดง 🔗 เมื่อไพ่ใบนั้นอยู่ในเงื่อนไข (linkable) หรือ ถูกคลิกเชื่อมโยงแล้ว (linked) */
+        .card-item.linkable .link-badge, .card-item.linked .link-badge { display: flex; }
+        
+        /* --- ส่วนเครื่องมือปุ่มกดไฮไลท์ ย้ายมาอยู่ซ้ายบนของกระดานไพ่ --- */
+        .filter-controls { position: absolute; top: 0px; left: 10px; display: flex; flex-direction: column; gap: 15px; z-index: 50; text-align: left; }
         .filter-group { display: flex; gap: 6px; flex-wrap: wrap; width: 140px; }
         .btn-icon { width: 38px; height: 38px; border-radius: 8px; border: 2px solid #bdc3c7; background: #fff; font-size: 1.2em; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; margin: 0; }
         .btn-icon:hover { transform: scale(1.1); border-color: #3498db; }
@@ -142,12 +146,6 @@
         .pos-B3 { grid-area: 3 / 2; } .pos-D3 { grid-area: 3 / 4; } .pos-F3 { grid-area: 3 / 6; }
         .pos-A4 { grid-area: 4 / 1; } .pos-B4 { grid-area: 4 / 2; } .pos-C4 { grid-area: 4 / 3; }
         .pos-E4 { grid-area: 4 / 5; } .pos-F4 { grid-area: 4 / 6; } .pos-G4 { grid-area: 4 / 7; }
-
-        #summary-area { margin-top: 35px; padding-top: 25px; border-top: 2px dashed #bdc3c7; display: none; }
-        .summary-section { margin-bottom: 25px; }
-        .summary-title { font-family: 'Kanit', sans-serif; font-size: 1.4em; font-weight: bold; margin-bottom: 15px; text-align: left; padding-left: 10px; border-left: 6px solid; }
-        .summary-row { display: flex; flex-wrap: wrap; gap: 15px; justify-content: flex-start; }
-        .summary-card { width: 110px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
         @media print {
             .no-print, .btn-group, .filter-controls { display: none !important; }
@@ -286,24 +284,6 @@
             </div>
 
             <div id="capture-area">
-                <!-- 🌟 เครื่องมือปุ่มกดไฮไลท์ 🌟 -->
-                <div id="filter-controls" class="filter-controls no-print" data-html2canvas-ignore="true" style="display:none;">
-                    <div class="filter-group" style="margin-bottom: 5px;">
-                        <button class="btn-icon" onclick="filterCards('good')" title="ไพ่ดี/ดีมาก">🌟</button>
-                        <button class="btn-icon" onclick="filterCards('bad')" title="ไพ่ร้าย/ร้ายมาก">🌪️</button>
-                        <button class="btn-icon" onclick="filterCards('reset')" title="รีเซ็ตแสดงทั้งหมด">🔄</button>
-                    </div>
-                    <div class="filter-group">
-                        <button class="btn-icon day-btn" onclick="setDayMode('Sun', this)" title="ไฮไลท์ตามวันอาทิตย์">🔴</button>
-                        <button class="btn-icon day-btn" onclick="setDayMode('Mon', this)" title="ไฮไลท์ตามวันจันทร์">🟡</button>
-                        <button class="btn-icon day-btn" onclick="setDayMode('Tue', this)" title="ไฮไลท์ตามวันอังคาร">🩷</button>
-                        <button class="btn-icon day-btn" onclick="setDayMode('Wed', this)" title="ไฮไลท์ตามวันพุธ">🟢</button>
-                        <button class="btn-icon day-btn" onclick="setDayMode('Thu', this)" title="ไฮไลท์ตามวันพฤหัสบดี">🟠</button>
-                        <button class="btn-icon day-btn" onclick="setDayMode('Fri', this)" title="ไฮไลท์ตามวันศุกร์">🔵</button>
-                        <button class="btn-icon day-btn" onclick="setDayMode('Sat', this)" title="ไฮไลท์ตามวันเสาร์">🟣</button>
-                    </div>
-                </div>
-
                 <div id="result-display">
                     <div class="section-container">
                         <div id="master-cards-area" class="master-cards-layout"></div>
@@ -312,11 +292,32 @@
                     
                     <div id="display-question" class="question-box"></div>
                     <div id="user-context-display" class="user-context-box"></div>
-                    <div id="card-area"></div>
                     
-                    <div id="summary-area"></div>
+                    <!-- 🌟 พื้นที่กระดานไพ่พร้อมเครื่องมือไฮไลท์ 🌟 -->
+                    <div class="card-area-wrapper">
+                        <!-- ปุ่มไฮไลท์ ย้ายเข้ามาในพื้นที่ว่างฝั่งซ้ายของกระดาน 12 ใบ -->
+                        <div id="filter-controls" class="filter-controls no-print" data-html2canvas-ignore="true" style="display:none;">
+                            <div class="filter-group" style="margin-bottom: 5px;">
+                                <button class="btn-icon" onclick="filterCards('good')" title="ไพ่ดี/ดีมาก">🌟</button>
+                                <button class="btn-icon" onclick="filterCards('bad')" title="ไพ่ร้าย/ร้ายมาก">🌪️</button>
+                                <button class="btn-icon" onclick="filterCards('reset')" title="รีเซ็ตแสดงทั้งหมด">🔄</button>
+                            </div>
+                            <div class="filter-group">
+                                <button class="btn-icon day-btn" onclick="setDayMode('Sun', this)" title="ไฮไลท์ตามวันอาทิตย์">🔴</button>
+                                <button class="btn-icon day-btn" onclick="setDayMode('Mon', this)" title="ไฮไลท์ตามวันจันทร์">🟡</button>
+                                <button class="btn-icon day-btn" onclick="setDayMode('Tue', this)" title="ไฮไลท์ตามวันอังคาร">🩷</button>
+                                <button class="btn-icon day-btn" onclick="setDayMode('Wed', this)" title="ไฮไลท์ตามวันพุธ">🟢</button>
+                                <button class="btn-icon day-btn" onclick="setDayMode('Thu', this)" title="ไฮไลท์ตามวันพฤหัสบดี">🟠</button>
+                                <button class="btn-icon day-btn" onclick="setDayMode('Fri', this)" title="ไฮไลท์ตามวันศุกร์">🔵</button>
+                                <button class="btn-icon day-btn" onclick="setDayMode('Sat', this)" title="ไฮไลท์ตามวันเสาร์">🟣</button>
+                            </div>
+                        </div>
 
-                    <p style="font-size: 12px; color: #bdc3c7; margin-top: 20px; text-align: center; font-weight: bold;">พรหมญาณพยากรณ์ โดย หมอวิทยา ธรรมนาย</p>
+                        <!-- กระดานไพ่ -->
+                        <div id="card-area"></div>
+                    </div>
+                    
+                    <p style="font-size: 12px; color: #bdc3c7; margin-top: 30px; text-align: center; font-weight: bold;">พรหมญาณพยากรณ์ โดย หมอวิทยา ธรรมนาย</p>
                 </div>
             </div>
         </div>
@@ -428,21 +429,21 @@
     const WEALTH_CARDS = ["410", "411", "415", "416", "424", "429"];
     const WEALTH_POSITIONS = ["ทรัพย์สิน", "บ้านช่อง", "ลาภยศ", "ความสุข", "พื้นดวง", "สรุปดวงชะตา", "สรุป"];
 
-    // 🌟 กฎความสัมพันธ์ของไพ่ตามวันเกิด
+    // 🌟 กฎความสัมพันธ์ของไพ่ (แบบกลุ่ม) สามารถคลิกใบใดก็ได้ในกลุ่ม
     const dayLogic = {
-        'Sun': { 'พื้นดวง': ['พื้นดวง', 'บริวาร'], 'ทรัพย์สิน': ['ทรัพย์สิน', 'ศัตรู', 'ความสุข'], 'บ้านช่อง': ['บ้านช่อง', 'คู่ครอง'], 'ญาติ': ['ญาติ', 'สรุปดวงชะตา'] },
-        'Mon': { 'พื้นดวง': ['พื้นดวง', 'บริวาร', 'โรคภัย'], 'ทรัพย์สิน': ['ทรัพย์สิน', 'ศัตรู'], 'บ้านช่อง': ['บ้านช่อง', 'โชคลาภ'] },
-        'Tue': { 'พื้นดวง': ['พื้นดวง', 'บริวาร'], 'ทรัพย์สิน': ['ทรัพย์สิน', 'การงาน'], 'คู่ครอง': ['คู่ครอง', 'โรคภัย'] },
-        'Wed': { 'พื้นดวง': ['พื้นดวง', 'ความสุข'], 'บ้านช่อง': ['บ้านช่อง', 'สรุปดวงชะตา'] },
-        'Thu': { 'ทรัพย์สิน': ['ทรัพย์สิน', 'โชคลาภ'], 'บริวาร': ['บริวาร', 'สรุปดวงชะตา'], 'คู่ครอง': ['คู่ครอง', 'ความสุข'] },
-        'Fri': { 'พื้นดวง': ['พื้นดวง', 'การงาน'], 'บ้านช่อง': ['บ้านช่อง', 'คู่ครอง'], 'ญาติ': ['ญาติ', 'โชคลาภ'], 'ศัตรู': ['ศัตรู', 'โรคภัย'] },
-        'Sat': { 'ทรัพย์สิน': ['ทรัพย์สิน', 'ศัตรู'], 'บ้านช่อง': ['บ้านช่อง', 'คู่ครอง', 'การงาน'] }
+        'Sun': [ ['พื้นดวง', 'บริวาร'], ['ทรัพย์สิน', 'ศัตรู', 'ความสุข'], ['บ้านช่อง', 'คู่ครอง'], ['ญาติ', 'สรุปดวงชะตา'] ],
+        'Mon': [ ['พื้นดวง', 'บริวาร', 'โรคภัย'], ['ทรัพย์สิน', 'ศัตรู'], ['บ้านช่อง', 'โชคลาภ'] ],
+        'Tue': [ ['พื้นดวง', 'บริวาร'], ['ทรัพย์สิน', 'การงาน'], ['คู่ครอง', 'โรคภัย'] ],
+        'Wed': [ ['พื้นดวง', 'ความสุข'], ['บ้านช่อง', 'สรุปดวงชะตา'] ],
+        'Thu': [ ['ทรัพย์สิน', 'โชคลาภ'], ['บริวาร', 'สรุปดวงชะตา'], ['คู่ครอง', 'ความสุข'] ],
+        'Fri': [ ['พื้นดวง', 'การงาน'], ['บ้านช่อง', 'คู่ครอง'], ['ญาติ', 'โชคลาภ'], ['ศัตรู', 'โรคภัย'] ],
+        'Sat': [ ['ทรัพย์สิน', 'ศัตรู'], ['บ้านช่อง', 'คู่ครอง', 'การงาน'] ]
     };
 
     let currentMode = 12; let selectedCards = []; let maxAllowed = 12;
     let deck = Object.keys(CARD_DATA).map(Number);
     let isNumbersVisible = true; 
-    let activeDayMode = null; // สถานะโหมดวันเกิดที่ถูกเลือก
+    let activeDayMode = null; 
 
     function toggleUserInfo() {
         const content = document.getElementById('user-info-content');
@@ -554,54 +555,69 @@
     }
 
     // 🌟 ระบบไฮไลท์ไพ่
-    function filterCards(type) {
-        activeDayMode = null; // ปิดโหมดวันเกิด
-        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+    function filterCards(type, skipDayReset = false) {
+        if (!skipDayReset) {
+            activeDayMode = null; 
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+        }
+        
         const cards = document.querySelectorAll('#card-area .card-item');
         
         cards.forEach(card => {
             card.classList.remove('faded', 'linked');
+            if (!skipDayReset) card.classList.remove('linkable'); // ล้างไอคอนเชื่อมถ้าไม่ใช่การเปลี่ยนวัน
+            
             const id = card.dataset.id;
             let show = false;
             
-            if (type === 'good') {
-                show = VERY_GOOD.includes(id) || GOOD.includes(id);
-            } else if (type === 'bad') {
-                show = VERY_BAD.includes(id) || BAD.includes(id);
-            } else if (type === 'reset') {
-                show = true;
-            }
+            if (type === 'good') show = VERY_GOOD.includes(id) || GOOD.includes(id);
+            else if (type === 'bad') show = VERY_BAD.includes(id) || BAD.includes(id);
+            else if (type === 'reset') show = true;
             
-            if (!show) {
-                card.classList.add('faded');
-            }
+            if (!show) { card.classList.add('faded'); }
         });
     }
 
+    // เมื่อกดปุ่มวันเกิด 
     function setDayMode(day, btn) {
         activeDayMode = day;
         document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filterCards('reset'); // รีเซ็ตเพื่อรอรับคำสั่งคลิก
-        activeDayMode = day; // ใส่กลับอีกครั้งเพราะ filterCards(reset) จะล้างค่า
+        if(btn) btn.classList.add('active');
+        
+        filterCards('reset', true); // รีเซ็ตเพื่อแสดงไพ่ทุกใบแบบสว่างก่อน
+        activeDayMode = day; // ใส่กลับอีกครั้ง
+
+        // 🌟 ใส่คลาส linkable ให้ไพ่ทุกใบที่มีความสัมพันธ์ในวันนั้น เพื่อให้ไอคอน 🔗 แสดงอัตโนมัติ
+        if (activeDayMode && dayLogic[activeDayMode]) {
+            const allLinkablePos = dayLogic[activeDayMode].flat();
+            const cards = document.querySelectorAll('#card-area .card-item');
+            cards.forEach(card => {
+                if (allLinkablePos.includes(card.dataset.pos)) {
+                    card.classList.add('linkable');
+                } else {
+                    card.classList.remove('linkable');
+                }
+            });
+        }
     }
 
+    // 🌟 คลิกที่ตำแหน่งใดๆ ก็ได้ภายในกลุ่มที่มีความสัมพันธ์
     function handleCardClick(posName) {
         if (!activeDayMode) return;
         const logic = dayLogic[activeDayMode];
-        
-        // ถ้าตำแหน่งที่คลิกไม่มีอยู่ในเงื่อนไขของวันนั้น ไม่ต้องทำอะไร
-        if (!logic || !logic[posName]) return; 
+        if (!logic) return;
 
-        const targetPos = logic[posName];
+        // หาว่าตำแหน่งที่คลิกอยู่ในกลุ่มไหน
+        const targetGroup = logic.find(group => group.includes(posName));
+        if (!targetGroup) return; // ถ้าตำแหน่งนั้นไม่มีเงื่อนไข ไม่ต้องทำอะไร
+
         const cards = document.querySelectorAll('#card-area .card-item');
-        
         cards.forEach(card => {
             card.classList.remove('faded', 'linked');
-            if (targetPos.includes(card.dataset.pos)) {
-                card.classList.add('linked'); // ใส่สัญลักษณ์ 🔗
+            if (targetGroup.includes(card.dataset.pos)) {
+                card.classList.add('linked'); // ไฮไลท์ และคงความสว่าง
             } else {
-                card.classList.add('faded'); // ทำให้ใบอื่นจางลง
+                card.classList.add('faded'); // ใบอื่นที่ไม่ได้อยู่ในกลุ่มให้จางลง
             }
         });
     }
@@ -612,11 +628,9 @@
         const contextDisplay = document.getElementById('user-context-display');
         const cardArea = document.getElementById('card-area');
         const masterArea = document.getElementById('master-cards-area');
-        const summaryArea = document.getElementById('summary-area'); 
         const filterControls = document.getElementById('filter-controls');
 
         cardArea.innerHTML = ""; masterArea.innerHTML = ""; contextDisplay.innerHTML = "";
-        if(summaryArea) summaryArea.innerHTML = ""; 
         contextDisplay.style.display = 'none'; resultDisplay.style.display = 'block';
 
         // เปิดแสดงปุ่มกรองเฉพาะแบบ 12 ใบ
@@ -676,17 +690,17 @@
             const cardDiv = document.createElement('div');
             cardDiv.className = cardClass;
             
-            // 🌟 เพิ่ม data attribute สำหรับนำไปใช้กับการคลิกไฮไลท์
+            // เพิ่ม data attribute
             cardDiv.dataset.pos = posPart;
             cardDiv.dataset.id = strCardId;
 
             if (currentMode === 12) {
                 cardDiv.classList.add(gridLayoutMap12[index]);
-                cardDiv.onclick = () => handleCardClick(posPart); // สั่งให้รับการคลิก
+                cardDiv.onclick = () => handleCardClick(posPart); // รองรับการคลิก
                 cardDiv.style.cursor = 'pointer';
             }
 
-            // 🌟 เพิ่ม .link-badge เพื่อรองรับการแสดงผลเวลาเชื่อมโยงไพ่
+            // 🌟 badge สำหรับสัญลักษณ์ 🔗
             cardDiv.innerHTML = `
                 <div class="link-badge">🔗</div>
                 <span class="${labelClass}">${posPart}</span>
@@ -695,40 +709,6 @@
             cardArea.appendChild(cardDiv);
         });
 
-        if (currentMode === 12 && summaryArea) {
-            let selectedStr = selectedCards.map(String);
-            let vgCards = selectedStr.filter(id => VERY_GOOD.includes(id)).sort((a,b) => parseInt(a) - parseInt(b));
-            let gCards  = selectedStr.filter(id => GOOD.includes(id)).sort((a,b) => parseInt(a) - parseInt(b));
-            let vbCards = selectedStr.filter(id => VERY_BAD.includes(id)).sort((a,b) => parseInt(a) - parseInt(b));
-            let bCards  = selectedStr.filter(id => BAD.includes(id)).sort((a,b) => parseInt(a) - parseInt(b));
-
-            let goodRowCards = [...vgCards, ...gCards];
-            let badRowCards = [...vbCards, ...bCards];
-            let summaryHTML = "";
-
-            if (goodRowCards.length > 0) {
-                summaryHTML += `<div class="summary-section"><div class="summary-title" style="color: #0d47a1; border-left-color: #0d47a1;">🌟 สรุปกลุ่มไพ่ให้คุณ (ดีมาก และ ดี)</div><div class="summary-row">`;
-                goodRowCards.forEach(id => {
-                    let cardClass = VERY_GOOD.includes(id) ? "card-very-good" : "card-good";
-                    let label = VERY_GOOD.includes(id) ? "ดีมาก" : "ดี";
-                    summaryHTML += `<div class="card-item ${cardClass} summary-card"><span class="pos-label">${id} (${label})</span><img src="${IMAGE_PATH}${id}${IMAGE_EXT}" crossorigin="anonymous"></div>`;
-                });
-                summaryHTML += `</div></div>`;
-            }
-
-            if (badRowCards.length > 0) {
-                summaryHTML += `<div class="summary-section"><div class="summary-title" style="color: #b71c1c; border-left-color: #b71c1c;">⚠️ สรุปกลุ่มไพ่ให้โทษ (ร้ายมาก และ ร้าย)</div><div class="summary-row">`;
-                badRowCards.forEach(id => {
-                    let cardClass = VERY_BAD.includes(id) ? "card-very-bad" : "card-bad";
-                    let label = VERY_BAD.includes(id) ? "ร้ายมาก" : "ร้าย";
-                    summaryHTML += `<div class="card-item ${cardClass} summary-card"><span class="pos-label">${id} (${label})</span><img src="${IMAGE_PATH}${id}${IMAGE_EXT}" crossorigin="anonymous"></div>`;
-                });
-                summaryHTML += `</div></div>`;
-            }
-
-            if (summaryHTML !== "") { summaryArea.innerHTML = summaryHTML; summaryArea.style.display = 'block'; }
-        }
-        
         // รีเซ็ตปุ่มกรองข้อมูล
         filterCards('reset');
     }

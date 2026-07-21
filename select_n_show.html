@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>.หมอวิทยา ธรรมนาย.</title>
+    <title>..หมอวิทยา ธรรมนาย..</title>
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
@@ -55,7 +55,9 @@
         .card { aspect-ratio: 2/3; background-image: url('images_small/back.jpg'); background-size: cover; background-position: center; background-color: #bdc3c7; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; border: 1px solid #7f8c8d; box-shadow: 0 4px 8px rgba(0,0,0,0.4); position: relative; }
         .card-bg-number { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5em; font-family: 'Kanit', sans-serif; font-weight: bold; color: rgba(255, 255, 255, 0.5); z-index: 1; pointer-events: none; }
         .hide-numbers .card-bg-number { display: none !important; }
-        .card.selected { background-image: none; background: linear-gradient(145deg, #e67e22, #d35400); font-size: 32px; font-family: 'Kanit', sans-serif; font-weight: bold; border: 2px solid #fff; }
+        
+        /* สไตล์เมื่อไพ่ถูกเลือก (แก้ไขพื้นหลังให้สวยขึ้น) */
+        .card.selected { background-image: none; background: linear-gradient(145deg, #27ae60, #2ecc71); font-size: 32px; font-family: 'Kanit', sans-serif; font-weight: bold; border: 2px solid #fff; box-shadow: 0 0 15px rgba(46, 204, 113, 0.5); transition: 0.3s ease; }
         .card.selected .card-bg-number { display: none !important; }
 
         button { padding: 12px 25px; cursor: pointer; background: #27ae60; color: white; border: none; border-radius: 10px; margin: 8px; font-size: 16px; font-weight: bold; }
@@ -108,7 +110,6 @@
         
         /* การแสดง Badge 🔗 */
         .link-badge { position: absolute; top: -10px; right: -10px; background: #f1c40f; color: #333; width: 28px; height: 28px; border-radius: 50%; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 10; display: none; font-family: 'Kanit', sans-serif; border: 2px solid #fff; transition: 0.2s ease; }
-        /* แสดง 🔗 เมื่อไพ่ใบนั้นอยู่ในเงื่อนไข (linkable) หรือ ถูกคลิกเชื่อมโยงแล้ว (linked) */
         .card-item.linkable .link-badge, .card-item.linked .link-badge { display: flex; }
         
         /* --- ส่วนเครื่องมือปุ่มกดไฮไลท์ ย้ายมาอยู่ซ้ายบนของกระดานไพ่ --- */
@@ -497,28 +498,75 @@
 
     function shuffleAndReset() { selectedCards = []; document.getElementById('result-area').style.display = 'none'; deck.sort(() => Math.random() - 0.5); renderBoard(); }
 
+    // 🌟 ระบบวาดกระดานไพ่ที่มีการจดจำหมายเลขลำดับเดิมไว้
     function renderBoard() {
         const board = document.getElementById('card-board'); board.innerHTML = "";
         if (!isNumbersVisible) { board.classList.add('hide-numbers'); }
         deck.forEach((cardId, index) => {
-            const cardDiv = document.createElement('div'); cardDiv.className = 'card'; cardDiv.id = `client-card-${cardId}`; 
+            const cardDiv = document.createElement('div'); 
+            cardDiv.className = 'card'; 
+            cardDiv.id = `client-card-${cardId}`; 
+            cardDiv.dataset.originalNumber = index + 1; // เก็บหมายเลขดั้งเดิมของไพ่ก่อนถูกสับ
             cardDiv.innerHTML = `<span class="card-bg-number">${index + 1}</span>`;
-            cardDiv.onclick = () => selectCard(cardId, cardDiv); board.appendChild(cardDiv);
+            cardDiv.onclick = () => selectCard(cardId, cardDiv); 
+            board.appendChild(cardDiv);
         });
     }
 
+    // 🌟 ฟังก์ชันจัดการเมื่อคลิกไพ่ (เลือกใหม่ / และยกเลิกการเลือก)
     function selectCard(cardId, element) {
-        if (element.classList.contains('selected')) return;
         if (currentMode === 3 && document.getElementById('user-question-3').value.trim() === "") { alert("กรุณาพิมพ์คำถามก่อนครับ"); return; }
+        
+        // 🌟 ถ้ายกเลิกการเลือก (คลิกไพ่ที่ถูกเลือกไปแล้ว)
+        if (element.classList.contains('selected')) {
+            const indexToRemove = selectedCards.indexOf(cardId);
+            if (indexToRemove > -1) {
+                selectedCards.splice(indexToRemove, 1); // ถอดไพ่ออกจากประวัติ
+            }
+            
+            // ล้างหน้าตาของไพ่ ให้กลับไปคว่ำหน้าพร้อมตัวเลขเดิม
+            element.classList.remove('selected');
+            const origNum = element.dataset.originalNumber;
+            element.innerHTML = `<span class="card-bg-number">${origNum}</span>`;
+            
+            // ปรับปรุงหมายเลขลำดับใหม่บนไพ่ใบที่เหลือ
+            selectedCards.forEach((id, idx) => {
+                const pickedCardDiv = document.getElementById(`client-card-${id}`);
+                if (pickedCardDiv) { pickedCardDiv.innerHTML = `${idx + 1}`; }
+            });
+
+            // ปรับ maxAllowed คืนเผื่อว่าถูกลบไพ่พิเศษทิ้งไป (โหมด 3 ใบ)
+            if (currentMode === 3) {
+                maxAllowed = 3;
+                for (let i = 2; i < selectedCards.length; i++) {
+                    if (EXTRA_CARD_IDS.includes(selectedCards[i])) maxAllowed++;
+                }
+                if (maxAllowed > 6) maxAllowed = 6;
+                document.getElementById('status-msg').innerText = `✨ หยิบไพ่ต่อให้ครบ ${maxAllowed} ใบครับ`;
+            } else {
+                document.getElementById('status-msg').innerText = `👉 ยกเลิกไพ่สำเร็จ หยิบต่อให้ครบ ${maxAllowed} ใบครับ`;
+            }
+            
+            return; // จบการทำงานในขั้นตอนนี้
+        }
+
+        // 🌟 ถ้าเป็นการเลือกไพ่ตามปกติ
         if (selectedCards.length < maxAllowed) {
-            selectedCards.push(cardId); element.classList.add('selected'); element.innerHTML = `${selectedCards.length}`;
+            selectedCards.push(cardId); 
+            element.classList.add('selected'); 
+            element.innerHTML = `${selectedCards.length}`;
+            
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length <= 5 && EXTRA_CARD_IDS.includes(cardId)) {
                 maxAllowed++;
                 document.getElementById('extra-card-popup').style.display = 'flex';
                 document.getElementById('status-msg').innerText = `✨ ได้รับสิทธิ์เลือกไพ่เพิ่ม (ต้องหยิบให้ครบ ${maxAllowed} ใบ)`;
                 return;
             }
-            if (selectedCards.length === maxAllowed) showResults();
+            
+            // หากเลือกไพ่ครบโควต้า ให้หน่วงเวลานิดนึงก่อนเปิดไพ่
+            if (selectedCards.length === maxAllowed) {
+                setTimeout(() => showResults(), 300);
+            }
         }
     }
 
@@ -531,7 +579,7 @@
             if(cardDiv) { cardDiv.classList.add('selected'); cardDiv.innerHTML = `${selectedCards.length}`; }
             if (currentMode === 3 && selectedCards.length >= 3 && selectedCards.length <= 5 && EXTRA_CARD_IDS.includes(cardId)) { maxAllowed++; }
         }
-        showResults();
+        setTimeout(() => showResults(), 300); // ดีเลย์เล็กน้อย
         if (currentMode === 3 && maxAllowed > 3) { document.getElementById('status-msg').innerHTML = `✨ <b>ระบบพบไพ่พิเศษ!</b> จึงจั่วเพิ่มให้อัตโนมัติ`; }
     }
 
@@ -565,7 +613,7 @@
         
         cards.forEach(card => {
             card.classList.remove('faded', 'linked');
-            if (!skipDayReset) card.classList.remove('linkable'); // ล้างไอคอนเชื่อมถ้าไม่ใช่การเปลี่ยนวัน
+            if (!skipDayReset) card.classList.remove('linkable'); 
             
             const id = card.dataset.id;
             let show = false;
@@ -578,16 +626,14 @@
         });
     }
 
-    // เมื่อกดปุ่มวันเกิด 
     function setDayMode(day, btn) {
         activeDayMode = day;
         document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
         
-        filterCards('reset', true); // รีเซ็ตเพื่อแสดงไพ่ทุกใบแบบสว่างก่อน
-        activeDayMode = day; // ใส่กลับอีกครั้ง
+        filterCards('reset', true); 
+        activeDayMode = day; 
 
-        // 🌟 ใส่คลาส linkable ให้ไพ่ทุกใบที่มีความสัมพันธ์ในวันนั้น เพื่อให้ไอคอน 🔗 แสดงอัตโนมัติ
         if (activeDayMode && dayLogic[activeDayMode]) {
             const allLinkablePos = dayLogic[activeDayMode].flat();
             const cards = document.querySelectorAll('#card-area .card-item');
@@ -601,23 +647,21 @@
         }
     }
 
-    // 🌟 คลิกที่ตำแหน่งใดๆ ก็ได้ภายในกลุ่มที่มีความสัมพันธ์
     function handleCardClick(posName) {
         if (!activeDayMode) return;
         const logic = dayLogic[activeDayMode];
         if (!logic) return;
 
-        // หาว่าตำแหน่งที่คลิกอยู่ในกลุ่มไหน
         const targetGroup = logic.find(group => group.includes(posName));
-        if (!targetGroup) return; // ถ้าตำแหน่งนั้นไม่มีเงื่อนไข ไม่ต้องทำอะไร
+        if (!targetGroup) return; 
 
         const cards = document.querySelectorAll('#card-area .card-item');
         cards.forEach(card => {
             card.classList.remove('faded', 'linked');
             if (targetGroup.includes(card.dataset.pos)) {
-                card.classList.add('linked'); // ไฮไลท์ และคงความสว่าง
+                card.classList.add('linked'); 
             } else {
-                card.classList.add('faded'); // ใบอื่นที่ไม่ได้อยู่ในกลุ่มให้จางลง
+                card.classList.add('faded'); 
             }
         });
     }
@@ -633,7 +677,6 @@
         cardArea.innerHTML = ""; masterArea.innerHTML = ""; contextDisplay.innerHTML = "";
         contextDisplay.style.display = 'none'; resultDisplay.style.display = 'block';
 
-        // เปิดแสดงปุ่มกรองเฉพาะแบบ 12 ใบ
         if (currentMode === 12) { filterControls.style.display = 'flex'; } 
         else { filterControls.style.display = 'none'; }
 
@@ -690,17 +733,15 @@
             const cardDiv = document.createElement('div');
             cardDiv.className = cardClass;
             
-            // เพิ่ม data attribute
             cardDiv.dataset.pos = posPart;
             cardDiv.dataset.id = strCardId;
 
             if (currentMode === 12) {
                 cardDiv.classList.add(gridLayoutMap12[index]);
-                cardDiv.onclick = () => handleCardClick(posPart); // รองรับการคลิก
+                cardDiv.onclick = () => handleCardClick(posPart); 
                 cardDiv.style.cursor = 'pointer';
             }
 
-            // 🌟 badge สำหรับสัญลักษณ์ 🔗
             cardDiv.innerHTML = `
                 <div class="link-badge">🔗</div>
                 <span class="${labelClass}">${posPart}</span>
@@ -709,7 +750,6 @@
             cardArea.appendChild(cardDiv);
         });
 
-        // รีเซ็ตปุ่มกรองข้อมูล
         filterCards('reset');
     }
 
